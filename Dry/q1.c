@@ -29,7 +29,6 @@ void freeList(Node list) {
     while (list) {
         prev = list;
         list = list->next;
-        prev->next = NULL;
         free(prev);
     }
 }

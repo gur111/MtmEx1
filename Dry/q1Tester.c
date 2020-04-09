@@ -23,7 +23,7 @@
     }
 
 Node copyNode(Node n) {
-    Node newNode = malloc(sizeof(n));
+    Node newNode = malloc(sizeof(*n));
     newNode->x = n->x;
     return newNode;
 }
@@ -185,9 +185,10 @@ bool testOnce(int test_num) {
                 (void *)merged_actual);
             status = false;
         }
-    } else{
+    } else {
         status = status && areListsEqual(merged_actual, merged_expected);
     }
+    char *merged_expected_str = NULL, *merged_actual_str = NULL;
 
     if (strcmp(list1_before, list1_after) ||
         strcmp(list2_before, list2_after) || !status) {
@@ -199,16 +200,24 @@ bool testOnce(int test_num) {
         fprintf(stderr, "\t%s\n", list2_before);
 
         fprintf(stderr, "List1 after:\n");
-        fprintf(stderr, "\t%s\n", listToString(lists[0]));
+        fprintf(stderr, "\t%s\n", list1_after);
         fprintf(stderr, "List2 after:\n");
-        fprintf(stderr, "\t%s\n", listToString(lists[1]));
+        fprintf(stderr, "\t%s\n", list2_after);
 
         fprintf(stderr, "Merged expected:\n");
-        fprintf(stderr, "\t%s\n", listToString(merged_expected));
+        merged_expected_str = listToString(merged_expected);
+        fprintf(stderr, "\t%s\n", merged_expected_str);
         fprintf(stderr, "Merged actual:\n");
-        fprintf(stderr, "\t%s\n", listToString(merged_actual));
+        merged_actual_str = listToString(merged_actual);
+        fprintf(stderr, "\t%s\n", merged_actual_str);
         status = false;
     }
+    free(list1_before);
+    free(list1_after);
+    free(list2_before);
+    free(list2_after);
+    free(merged_expected_str);
+    free(merged_actual_str);
 
     freeList(merged_actual);
     freeList(merged_expected);
@@ -217,7 +226,7 @@ bool testOnce(int test_num) {
     return status;
 }
 
-void printUsage() { printf("Usage "); }
+void printUsage(char *name) { printf("Usage:\n%s [NUM_OF_TESTS]\n", name); }
 
 int main(int argc, char **argv) {
     int count = 0, failures = 0;
@@ -225,7 +234,7 @@ int main(int argc, char **argv) {
     if (argc == 2 && sscanf(argv[1], "%d", &count) == 1) {
         printf("Running %d random tests...\n", count);
     } else {
-        printUsage();
+        printUsage(argv[0]);
         return 1;
     }
     srand(time(0));
