@@ -5,33 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Election",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/VsCodeCMakeTests",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
-            "preLaunchTask": "buildMain"
-        },
-        {
             "name": "Q1",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Q1Tester",
-            "args": [],
+            "program": "${workspaceRoot}/build/Q1Tester",
+            "args": ["100000"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceRoot}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -43,6 +23,26 @@
                 }
             ],
             "preLaunchTask": "buildQ1"
+        },
+        {
+            "name": "Election",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/build/Election",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "buildElection"
         }
     ]
 }
