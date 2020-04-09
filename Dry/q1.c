@@ -35,15 +35,19 @@ void freeList(Node list) {
 }
 
 ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out) {
-    // Argument verifications and allocation of HEAD
+    // Arguments verifications and allocation of HEAD
+    if (list1 == NULL || list2 == NULL) {
+        return EMPTY_LIST;
+    }
+
+    if (!isListSorted(list1) || !isListSorted(list2)) {
+        return UNSORTED_LIST;
+    }
+
     if (merged_out == NULL) {
         return NULL_ARGUMENT;
     }
     *merged_out = NULL;
-
-    if (list1 == NULL || list2 == NULL) {
-        return EMPTY_LIST;
-    }
 
     Node head = malloc(sizeof(*head));
     if (head == NULL) {
