@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch",
+            "name": "Election",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/VsCodeCMakeTests",
@@ -22,7 +22,27 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build"
+            "preLaunchTask": "buildMain"
+        },
+        {
+            "name": "Q1",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Q1Tester",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "buildQ1"
         }
     ]
 }
