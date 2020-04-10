@@ -28,6 +28,18 @@ Node copyNode(Node n) {
     return newNode;
 }
 
+void freeListSol(Node list) {
+    if (list == NULL) {
+        return;
+    }
+    Node prev;
+    while (list) {
+        prev = list;
+        list = list->next;
+        free(prev);
+    }
+}
+
 int getListLength(Node list) {
     int count = 0;
 
@@ -219,10 +231,10 @@ bool testOnce(int test_num) {
     free(merged_expected_str);
     free(merged_actual_str);
 
-    freeList(merged_actual);
-    freeList(merged_expected);
-    freeList(lists[0]);
-    freeList(lists[1]);
+    freeListSol(merged_actual);
+    freeListSol(merged_expected);
+    freeListSol(lists[0]);
+    freeListSol(lists[1]);
     return status;
 }
 
