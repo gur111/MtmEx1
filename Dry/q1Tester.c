@@ -7,20 +7,6 @@
 
 #define LIST_AS_STR_MAX_SIZE 3000
 #define NODE_AS_STR_MAX_SIZE 50
-#define PRINT_LIST(list)                       \
-    {                                          \
-        Node list_tmp = list;                  \
-        printf(#list ":\n\t");                 \
-        if (list_tmp == NULL) {                \
-            printf("NULL\n");                  \
-        } else {                               \
-            while (list_tmp != NULL) {         \
-                printf("%.2d->", list_tmp->x); \
-                list_tmp = list_tmp->next;     \
-            }                                  \
-            printf("NULL\n");                  \
-        }                                      \
-    }
 
 Node copyNode(Node n) {
     Node newNode = malloc(sizeof(*n));
