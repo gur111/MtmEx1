@@ -1,5 +1,7 @@
 #include "map.h"
 
+#include <stdlib.h>
+
 typedef struct Pair_t {
     char* key;
     char* value;
@@ -12,6 +14,7 @@ typedef struct Node_t {
 
 struct Map_t {
     Node head;
+    // Points to the current node while itterating
     Node itter;
     int count;
 };
@@ -28,12 +31,52 @@ struct Map_t {
  */
 static Node mapGetNode(Map map, const char* key);
 
+static inline void freePair(Pair pair) {
+    assert(pair);
+    free(pair->key);
+    free(pair->value);
+    free(pair);
+}
+
+static inline void freeNode(Node node) {
+    freePair(node->data);
+    free(node);
+}
+
+static void freeList(Node node) {
+    if (node == NULL) {
+        return;
+    }
+
+    Node prev;
+    while (node) {
+        prev = node;
+        node = node->next;
+        freeNode(prev);
+    }
+}
+
 Map mapCreate() {
-    return NULL;  // TODO: Write functionality
+    Map map = malloc(sizeof(*map));
+    if (map == NULL) {
+        return NULL;
+    }
+
+    map->count = 0;
+    map->head = NULL;
+    map->itter = NULL;
+
+    return map;
 }
 
 void mapDestroy(Map map) {
-    return;  // TODO: Write functionality
+    if (map == NULL) {
+        return;
+    }
+
+    freeList(map->head);
+    free(map);
+    return;
 }
 
 Map mapCopy(Map map) {
