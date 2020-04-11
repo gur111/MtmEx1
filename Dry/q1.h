@@ -1,5 +1,5 @@
-#ifndef _H_Q1
-#define _H_Q1
+#ifndef Q1_H_
+#define Q1_H_
 
 #include <stdbool.h>
 #include <stdlib.h>
