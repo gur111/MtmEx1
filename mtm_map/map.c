@@ -137,7 +137,7 @@ MapResult mapPut(Map map, const char* key, const char* value) {
     // Try getting existing node
     Node node = mapGetNode(map, key);
 
-    if (node = NULL) {
+    if (node == NULL) {
         // No existing node found; Create a new one
         node = nodeCreate(key, value);
 
