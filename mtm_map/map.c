@@ -148,6 +148,7 @@ MapResult mapPut(Map map, const char* key, const char* value) {
         // We attach the new node to the list
         node->next = map->head;
         map->head = node;
+        map->size++;
     } else {
         // If we found an existing node, we resize the memory for value
         char* new_value_memory = realloc(node->data.value, strlen(value) + 1);
