@@ -63,7 +63,7 @@ static Node nodeCreate(const char* key, const char* value) {
         return NULL;
     }
 
-    // To avoid accessing invalid addresses
+    // To avoid accessing invalid addresses (and sets size to 0)
     memset(node, 0, sizeof(*node));
 
     node->data.key = malloc(sizeof(strlen(key) + 1));
@@ -99,7 +99,6 @@ void mapDestroy(Map map) {
 
     listFree(map->head);
     free(map);
-    return;
 }
 
 Map mapCopy(Map map) {
