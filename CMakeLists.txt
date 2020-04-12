@@ -11,7 +11,7 @@ set(CMAKE_C_FLAGS ${CMAKE_TEST_DEBUG})
 
 
 add_executable(Q1Tester Dry/q1Tester.c Dry/q1.c)
-add_executable(MapTester mtm_map/tests/map_tests.c mtm_map/map.c)
+add_executable(MapTester mtm_map/tests/map_tests.c mtm_map/map.c )
 # target_compile_options(VsCodeCMakeTets PUBLIC "$<$<CONFIG:DEBUG>:${CMAKE_TEST_DEBUG}>")
 # target_compile_options(VsCodeCMakeTets PUBLIC "$<$<CONFIG:RELEASE>:${CMAKE_TEST_RELEASE}>")
 

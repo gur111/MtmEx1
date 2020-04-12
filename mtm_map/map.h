@@ -34,7 +34,7 @@
 */
 
 /** Type for defining the map */
-typedef struct Map_t* Map;
+typedef struct Map_t *Map;
 
 /** Type used for returning error codes from map functions */
 typedef enum MapResult_t {
@@ -94,7 +94,7 @@ int mapGetSize(Map map);
 * 	false - if one or more of the inputs is null, or if the key element was not found.
 * 	true - if the key element was found in the map.
 */
-bool mapContains(Map map, const char* key);
+bool mapContains(Map map, const char *key);
 
 /**
 *	mapPut: Gives a specified key a specific value.
@@ -111,7 +111,7 @@ bool mapContains(Map map, const char* key);
 * 	an element failed)
 * 	MAP_SUCCESS the paired elements had been inserted successfully
 */
-MapResult mapPut(Map map, const char* key, const char* data);
+MapResult mapPut(Map map, const char *key, const char *data);
 
 /**
 *	mapGet: Returns the data associated with a specific key in the map(not a copy).
@@ -124,7 +124,7 @@ we want to get.
 *  NULL if a NULL pointer was sent or if the map does not contain the requested key.
 * 	A pointer to the data element associated with the key otherwise.
 */
-char* mapGet(Map map, const char* key);
+char *mapGet(Map map, const char *key);
 
 /**
 * 	mapRemove: Removes a pair of key and data elements from the map. The elements
@@ -142,7 +142,7 @@ char* mapGet(Map map, const char* key);
 *  MAP_ITEM_DOES_NOT_EXIST if an equal key item does not already exists in the map
 * 	MAP_SUCCESS the paired elements had been removed successfully
 */
-MapResult mapRemove(Map map, const char* key);
+MapResult mapRemove(Map map, const char *key);
 
 /**
 *	mapGetFirst: Sets the internal iterator (also called current key element) to
@@ -157,7 +157,7 @@ MapResult mapRemove(Map map, const char* key);
 * 	NULL if a NULL pointer was sent or the map is empty.
 * 	The first key element of the map otherwise
 */
-char* mapGetFirst(Map map);
+char *mapGetFirst(Map map);
 
 /**
 *	mapGetNext: Advances the map iterator to the next key element and returns it.
@@ -168,7 +168,7 @@ char* mapGetFirst(Map map);
 * 	or a NULL sent as argument
 * 	The next key element on the map in case of success
 */
-char* mapGetNext(Map map);
+char *mapGetNext(Map map);
 
 
 /**

@@ -5,14 +5,14 @@
 #include <stdlib.h>
 
 typedef struct {
-    char* key;
-    char* value;
+    char *key;
+    char *value;
 } Pair;
 
 typedef struct Node_t {
     Pair data;
-    struct Node_t* next;
-} * Node;
+    struct Node_t *next;
+} *Node;
 
 struct Map_t {
     Node head;
@@ -31,7 +31,7 @@ struct Map_t {
  *  key.
  * 	Otherwise, pointer to the node associated with the given key.
  */
-static Node mapGetNode(Map map, const char* key);
+static Node mapGetNode(Map map, const char *key);
 
 static inline void nodeFree(Node node) {
     free(node->data.key);
@@ -52,7 +52,7 @@ static void listFree(Node node) {
     }
 }
 
-static Node nodeCreate(const char* key, const char* value) {
+static Node nodeCreate(const char *key, const char *value) {
     assert(key);
     assert(value);
 
@@ -136,11 +136,11 @@ int mapGetSize(Map map) {
     return map->size;
 }
 
-inline bool mapContains(Map map, const char* key) {
+inline bool mapContains(Map map, const char *key) {
     return mapGet(map, key) == NULL ? false : true;
 }
 
-MapResult mapPut(Map map, const char* key, const char* value) {
+MapResult mapPut(Map map, const char *key, const char *value) {
     if (map == NULL || key == NULL || value == NULL) {
         return MAP_NULL_ARGUMENT;
     }
@@ -162,7 +162,7 @@ MapResult mapPut(Map map, const char* key, const char* value) {
         map->size++;
     } else {
         // If we found an existing node, we resize the memory for value
-        char* new_value_memory = realloc(node->data.value, strlen(value) + 1);
+        char *new_value_memory = realloc(node->data.value, strlen(value) + 1);
 
         if (new_value_memory == NULL) {
             return MAP_OUT_OF_MEMORY;
@@ -177,11 +177,11 @@ MapResult mapPut(Map map, const char* key, const char* value) {
     return MAP_SUCCESS;
 }
 
-static Node mapGetNode(Map map, const char* key) {
-    return NULL;  // TODO: Write functionality
+static Node mapGetNode(Map map, const char *key) {
+    return NULL;
 }
-// TODO: Check if the use of the free func is correct
-char* mapGet(Map map, const char* key) {
+
+char *mapGet(Map map, const char *key) {
     if (map == NULL || key == NULL) {
         return NULL;
     } else {
@@ -196,10 +196,9 @@ char* mapGet(Map map, const char* key) {
         }
         return NULL;
     }
-    // TODO: Try to run func
 }
 
-MapResult mapRemove(Map map, const char* key) {
+MapResult mapRemove(Map map, const char *key) {
     if (map == NULL || key == NULL) {
         return MAP_NULL_ARGUMENT;
     }
@@ -221,7 +220,7 @@ MapResult mapRemove(Map map, const char* key) {
     return MAP_ITEM_DOES_NOT_EXIST;
 }
 
-char* mapGetFirst(Map map) {
+char *mapGetFirst(Map map) {
     if (map == NULL || map->size == 0) {
         return NULL;
     }
@@ -230,7 +229,7 @@ char* mapGetFirst(Map map) {
     return map->itter->data.key;
 }
 
-char* mapGetNext(Map map) {
+char *mapGetNext(Map map) {
     if (map == NULL || map->itter->next == NULL) {
         return NULL;
     }
@@ -252,5 +251,6 @@ MapResult mapClear(Map map) {
     listFree(map->head);
     map->size = 0;
     map->head = map->itter = NULL;
-    return MAP_SUCCESS;  // TODO: try to run func
+    return MAP_SUCCESS;
 }
+
