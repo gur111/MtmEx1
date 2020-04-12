@@ -1,19 +1,30 @@
 #include "map.h"
-//hii
-typedef struct Pair_t {
+
+#include <stdbool.h>
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#define VERIFY_ALLOC(addr) \
+    if ((addr) == NULL) {  \
+        return NULL;       \
+    }
+
+typedef struct {
     char* key;
     char* value;
-} * Pair;
+} Pair;
 
 typedef struct Node_t {
     Pair data;
-    Node next;
+    struct Node_t* next;
 } * Node;
 
 struct Map_t {
     Node head;
+    // Points to the current node while itterating
     Node itter;
-    int count;
+    int size;
 };
 
 /**
@@ -28,50 +39,213 @@ struct Map_t {
  */
 static Node mapGetNode(Map map, const char* key);
 
+static inline void nodeFree(Node node) {
+    free(node->data.key);
+    free(node->data.value);
+    free(node);
+}
+
+static void listFree(Node node) {
+    //VERIFY_ALLOC(node);
+
+    Node prev;
+    while (node) {
+        prev = node;
+        node = node->next;
+        nodeFree(prev);
+    }
+    //TODO: ADD VERIFY_ALLOC
+}
+
+static Node nodeCreate(const char* key, const char* value) {
+    assert(key);
+    assert(value);
+
+    Node node = malloc(sizeof(*node));
+    VERIFY_ALLOC(node);
+    // To avoid accessing invalid addresses
+    memset(node, 0, sizeof(*node));
+
+    node->data.key = malloc(sizeof(strlen(key) + 1));
+    node->data.value = malloc(sizeof(strlen(value) + 1));
+
+    if (node->data.key == NULL || node->data.value == NULL) {
+        nodeFree(node);
+        return NULL;
+    }
+
+    strcpy(node->data.key, key);
+    strcpy(node->data.value, value);
+
+    return node;
+}
+
 Map mapCreate() {
-    return NULL;  // TODO: Write functionality
+    Map map = malloc(sizeof(*map));
+
+    VERIFY_ALLOC(map);
+    memset(map, 0, sizeof(*map));
+
+    return map;
 }
 
 void mapDestroy(Map map) {
-    return;  // TODO: Write functionality
+    //VERIFY_ALLOC(map);
+
+    listFree(map->head);
+    free(map);
+    return;
+    //TODO: ADD VERIFY_ALLOC
 }
 
 Map mapCopy(Map map) {
-    return NULL;  // TODO: Write functionality
+    VERIFY_ALLOC(map);
+    Map new_map = mapCreate();
+    VERIFY_ALLOC(new_map);
+
+    MapResult status = MAP_SUCCESS;
+
+    MAP_FOREACH(item, map) {
+        status = mapPut(new_map, map->itter->data.key, map->itter->data.value);
+        if (status != MAP_SUCCESS) {
+#ifndef NDEBUG
+            fprintf(stderr, "mapPut returned status: (%d)\n", status);
+#endif
+            mapDestroy(new_map);
+        }
+    }
+
+    new_map->size = map->size;
+
+    return new_map;
 }
 
 int mapGetSize(Map map) {
-    return 0;  // TODO: Write functionality
+    if (map == NULL) {
+        return -1;
+    }
+
+    return map->size;
 }
 
-bool mapContains(Map map, const char* key) {
-    return true;  // TODO: Write functionality
+inline bool mapContains(Map map, const char* key) {
+    return mapGet(map, key) == NULL ? false : true;
 }
 
-MapResult mapPut(Map map, const char* key, const char* data) {
-    return MAP_SUCCESS;  // TODO: Write functionality
+MapResult mapPut(Map map, const char* key, const char* value) {
+    if (map == NULL) {
+        return MAP_NULL_ARGUMENT;
+    }
+
+    // Try getting existing node
+    Node node = mapGetNode(map, key);
+
+    if (node == NULL) {
+        // No existing node found; Create a new one
+        node = nodeCreate(key, value);
+
+        if (node == NULL) {
+            return MAP_OUT_OF_MEMORY;
+        }
+
+        // We attach the new node to the list
+        node->next = map->head;
+        map->head = node;
+    } else {
+        // If we found an existing node, we resize the memory for value
+        char* new_value_memory = realloc(node->data.value, strlen(value) + 1);
+
+        if (new_value_memory == NULL) {
+            return MAP_OUT_OF_MEMORY;
+        }
+
+        strcpy(new_value_memory, value);
+
+        // We used realloc so no need to use free on the old address
+        node->data.value = new_value_memory;
+    }
+
+    return MAP_SUCCESS;
 }
 
 static Node mapGetNode(Map map, const char* key) {
     return NULL;  // TODO: Write functionality
 }
-
+//TODO: Check if the use of the free func is correct
 char* mapGet(Map map, const char* key) {
-    return NULL;  // TODO: Write functionality
+    if (map == NULL|| key == NULL) {
+        return NULL;
+    } else{
+        Node curr;
+        curr = map->head;
+        while (curr != NULL){
+            if (strcmp(curr->data.key,key)==0){
+                char *value_t = curr->data.value;
+                free(curr);
+                return value_t;
+            } else{
+                curr = curr->next;
+            }
+        }
+        free(curr);
+        return NULL;
+    }
+    // TODO: Try to run func
 }
 
 MapResult mapRemove(Map map, const char* key) {
-    return MAP_SUCCESS;  // TODO: Write functionality
+    if (map == NULL||key==NULL){
+        return MAP_NULL_ARGUMENT;
+    }
+    Node curr;
+    Node prev;
+    curr = map->head;
+    prev = NULL;
+    MAP_FOREACH(item,map){
+        if (strcmp(item,key) == 0){
+            Node to_delete;
+            to_delete = curr;
+            curr = curr->next;
+            prev->next = curr;
+            nodeFree(to_delete);
+            return MAP_SUCCESS;
+        } else{
+            prev = curr;
+            curr = curr->next;
+        }
+    }
+    return MAP_ITEM_DOES_NOT_EXIST;  // TODO: run the func
+    //TODO: ADD VERIFY_ALLOC
 }
 
 char* mapGetFirst(Map map) {
-    return NULL;  // TODO: Write functionality
+    //todo:REMOVE SIZE 3!!!!
+    map->size=3;
+    if (map == NULL|| map->size == 0){
+        return NULL;
+    } else{
+        map->itter = map->head;
+        return map->itter->data.key;
+    }
+      // TODO: run the func
+
 }
 
 char* mapGetNext(Map map) {
-    return NULL;  // TODO: Write functionality
+    if (map == NULL||map->itter->next == NULL){
+        return NULL;
+    }
+    map->itter = map->itter->next;
+    return map->itter->data.key;  // TODO: run the func
+    // TODO: WTF IS "iterator is at an invalid state"
 }
 
 MapResult mapClear(Map map) {
-    return MAP_SUCCESS;  // TODO: Write functionality
+    if (map == NULL){
+        return MAP_NULL_ARGUMENT;
+    }
+    listFree(map->itter);
+    listFree(map->head);
+    map->size = 0;
+    return MAP_SUCCESS;  // TODO: try to run func
 }
