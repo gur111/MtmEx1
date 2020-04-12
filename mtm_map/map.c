@@ -1,14 +1,8 @@
 #include "map.h"
 
-#include <stdbool.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define VERIFY_ALLOC(addr) \
-    if ((addr) == NULL) {  \
-        return NULL;       \
-    }
 
 typedef struct {
     char* key;
@@ -22,7 +16,7 @@ typedef struct Node_t {
 
 struct Map_t {
     Node head;
-    // Points to the current node while itterating
+    // Points to the current node while iterating
     Node itter;
     int size;
 };
@@ -46,7 +40,9 @@ static inline void nodeFree(Node node) {
 }
 
 static void listFree(Node node) {
-    //VERIFY_ALLOC(node);
+    if (node == NULL) {
+        return NULL;
+    }
 
     Node prev;
     while (node) {
@@ -54,7 +50,7 @@ static void listFree(Node node) {
         node = node->next;
         nodeFree(prev);
     }
-    //TODO: ADD VERIFY_ALLOC
+    //TODO: ADD VERIFY_ALLOC (why?)
 }
 
 static Node nodeCreate(const char* key, const char* value) {
@@ -62,7 +58,11 @@ static Node nodeCreate(const char* key, const char* value) {
     assert(value);
 
     Node node = malloc(sizeof(*node));
-    VERIFY_ALLOC(node);
+    
+    if (node == NULL) {
+        return NULL;
+    }
+
     // To avoid accessing invalid addresses
     memset(node, 0, sizeof(*node));
 
@@ -83,25 +83,35 @@ static Node nodeCreate(const char* key, const char* value) {
 Map mapCreate() {
     Map map = malloc(sizeof(*map));
 
-    VERIFY_ALLOC(map);
+    if (map == NULL) {
+        return NULL;
+    }
+
     memset(map, 0, sizeof(*map));
 
     return map;
 }
 
 void mapDestroy(Map map) {
-    //VERIFY_ALLOC(map);
+    if (map == NULL) {
+        return;
+    }
 
     listFree(map->head);
     free(map);
     return;
-    //TODO: ADD VERIFY_ALLOC
 }
 
 Map mapCopy(Map map) {
-    VERIFY_ALLOC(map);
+    if (map == NULL) {
+        return NULL;
+    }
+
     Map new_map = mapCreate();
-    VERIFY_ALLOC(new_map);
+
+    if (new_map == NULL) {
+        return NULL;
+    }
 
     MapResult status = MAP_SUCCESS;
 
@@ -133,7 +143,7 @@ inline bool mapContains(Map map, const char* key) {
 }
 
 MapResult mapPut(Map map, const char* key, const char* value) {
-    if (map == NULL) {
+    if (map == NULL || key == NULL || value == NULL) {
         return MAP_NULL_ARGUMENT;
     }
 
@@ -151,6 +161,7 @@ MapResult mapPut(Map map, const char* key, const char* value) {
         // We attach the new node to the list
         node->next = map->head;
         map->head = node;
+        map->size++;
     } else {
         // If we found an existing node, we resize the memory for value
         char* new_value_memory = realloc(node->data.value, strlen(value) + 1);
