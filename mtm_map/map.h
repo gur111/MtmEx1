@@ -117,7 +117,7 @@ MapResult mapPut(Map map, const char* key, const char* data);
 a copy). *			Iterator status unchanged
 *
 * @param map - The map for which to get the data element from.
-* @param key - The key element whichs need to be found and who's data
+* @param key - The key element whichs need to be found and whose data
 we want to get.
 * @return
 *  NULL if a NULL pointer was sent or if the map does not contain the requested
