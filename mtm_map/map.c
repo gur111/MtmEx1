@@ -219,8 +219,6 @@ MapResult mapRemove(Map map, const char* key) {
 }
 
 char* mapGetFirst(Map map) {
-    //todo:REMOVE SIZE 3!!!!
-    map->size=3;
     if (map == NULL|| map->size == 0){
         return NULL;
     } else{
