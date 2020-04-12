@@ -19,7 +19,7 @@ bool createMap_t() {
     return true;
 }
 
-bool put_get_func_t() {
+bool putGetFunc_t() {
     Map map1 = mapCreate();
     char *str1 = (char *) malloc(sizeof(char) * 6);
     strcpy(str1, "virus");
@@ -51,10 +51,26 @@ bool put_get_func_t() {
     return true;
 }
 
+bool copyMap_t() {
+    ASSERT_TEST(mapCopy(NULL) == NULL);
+    Map map_1 = mapCreate();
+    assert(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
+    assert(mapPut(map_1, "key2", "value2") == MAP_SUCCESS);
+    Map map_2 = mapCopy(map_1);
+    ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
+    ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
+    ASSERT_TEST(mapGetSize(map_2) == mapGetSize(map_1));
+    mapDestroy(map_1);
+    ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
+    ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
+    return true;
+}
+
 int main(int argc, char *argv[]) {
     printf("Start Map Tests");
-    put_get_func_t();
+    putGetFunc_t();
     createMap_t();
+    copyMap_t();
     return 0;
 }
 
