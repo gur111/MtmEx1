@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "../../test_utilities.h"
 #include "../map.h"
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -15,6 +14,7 @@ bool createMap_t() {
     mapPut(map1, "mary", "poppins");
     mapDestroy(map1);
     map1= NULL;
+    mapDestroy(map1);
     ASSERT_TEST(mapGet(map1, "mary") == NULL);
     ASSERT_TEST(mapGetSize(map1) == -1);
     ASSERT_TEST(map2 != NULL);
@@ -93,19 +93,48 @@ bool getSize() {
     ASSERT_TEST(mapGetSize(map_1)== 0);
     ASSERT_TEST(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
     ASSERT_TEST(mapGetSize(map_1)==1);
-    ASSERT_TEST(mapRemove(map_1,"key1"));
+    ASSERT_TEST(mapRemove(map_1,"key1")==MAP_SUCCESS);
     ASSERT_TEST(mapGetSize(map_1)== 0);
     ASSERT_TEST(mapGetSize(NULL)==-1);
     mapDestroy(map_1);
     return true;
 }
-
+bool mapContains_t(){
+    Map map1 = mapCreate();
+    mapPut(map1,"key1","value1");
+    ASSERT_TEST(mapContains(map1,"key1")==true);
+    ASSERT_TEST(mapContains(NULL,"key1")==false);
+    ASSERT_TEST(mapContains(map1,NULL)==false);
+    ASSERT_TEST(mapContains(map1,"dani")==false);
+    mapDestroy(map1);
+    return true;
+}
+bool mapRemove_t(){
+    Map map1 = mapCreate();
+    mapPut(map1,"key1","value1");
+    mapPut(map1,"key2","value2");
+    mapPut(map1,"key3","value3");
+    mapRemove(map1,"key1");
+    ASSERT_TEST(mapContains(map1,"key1")==false);
+    ASSERT_TEST(mapGetSize(map1)==2);
+    mapPut(map1,"key1","value1");
+    mapRemove(map1,"key3");
+    ASSERT_TEST(mapContains(map1,"key3")==false);
+    ASSERT_TEST(mapGetSize(map1)==2);
+    mapPut(map1,"key3","value3");
+    mapRemove(map1,"key3");
+    ASSERT_TEST(mapContains(map1,"key3")==false);
+    ASSERT_TEST(mapGetSize(map1)==2);
+    return true;
+}
 int main(int argc, char *argv[]) {
     printf("Start Map Tests");
     //putGetFunc_t();
     copyMap_t();
-    getSize();
+    //getSize();
     createMap_t();
+    mapContains_t();
+    mapRemove_t();
     return 0;
 }
 
