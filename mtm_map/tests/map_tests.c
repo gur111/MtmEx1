@@ -10,6 +10,8 @@ bool createMap_t() {
     Map map2 = mapCreate();
     ASSERT_TEST(map1 != NULL);
     ASSERT_TEST(map2 != NULL);
+    ASSERT_TEST(mapGetSize(map1) == 0);
+    ASSERT_TEST(mapGetFirst(map1) == NULL);
     mapPut(map1, "mary", "poppins");
     mapDestroy(map1);
     ASSERT_TEST(mapGet(map1, "mary") == NULL);
@@ -48,14 +50,15 @@ bool putGetFunc_t() {
     free(str3);
     res_srt = mapGet(map1, "virus");
     ASSERT_TEST(strcmp(res_srt, "daniel"));
+    mapDestroy(map1);
     return true;
 }
 
 bool copyMap_t() {
     ASSERT_TEST(mapCopy(NULL) == NULL);
     Map map_1 = mapCreate();
-    assert(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
-    assert(mapPut(map_1, "key2", "value2") == MAP_SUCCESS);
+    ASSERT_TEST(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
+    ASSERT_TEST(mapPut(map_1, "key2", "value2") == MAP_SUCCESS);
     Map map_2 = mapCopy(map_1);
     ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
     ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
@@ -63,6 +66,19 @@ bool copyMap_t() {
     mapDestroy(map_1);
     ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
     ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
+    mapDestroy(map_2);
+    return true;
+}
+
+bool getSize() {
+    Map map_1 = mapCreate();
+    ASSERT_TEST(mapGetSize(map_1)== 0);
+    ASSERT_TEST(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
+    ASSERT_TEST(mapGetSize(map_1)==1);
+    ASSERT_TEST(mapRemove(map_1,"key1"));
+    ASSERT_TEST(mapGetSize(map_1)== 0);
+    ASSERT_TEST(mapGetSize(NULL)==-1);
+    mapDestroy(map_1);
     return true;
 }
 
@@ -71,6 +87,7 @@ int main(int argc, char *argv[]) {
     putGetFunc_t();
     createMap_t();
     copyMap_t();
+    getSize();
     return 0;
 }
 
