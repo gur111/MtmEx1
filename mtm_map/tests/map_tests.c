@@ -50,7 +50,7 @@ bool putGetFunc_t() {
     ASSERT_TEST(res == MAP_SUCCESS);
     free(str2);
     char *res_srt = mapGet(map1, str1);
-    ASSERT_TEST(strcmp(res_srt, str2_copy));
+    ASSERT_TEST(!strcmp(res_srt, str2_copy));
     //enter a not existing key
     res_srt = mapGet(map1, "dani");
     ASSERT_TEST(res_srt == NULL);
@@ -58,11 +58,11 @@ bool putGetFunc_t() {
     res = mapPut(map1, str1, str3);
     ASSERT_TEST(res == MAP_SUCCESS);
     res_srt = mapGet(map1, str1);
-    ASSERT_TEST(strcmp(res_srt, str3));
+    ASSERT_TEST(!strcmp(res_srt, str3));
     free(str1);
     free(str3);
     res_srt = mapGet(map1, str1_copy);
-    ASSERT_TEST(strcmp(res_srt, str3_copy));
+    ASSERT_TEST(!strcmp(res_srt, str3_copy));
 
     free(str1_copy);
     free(str2_copy);
@@ -77,12 +77,12 @@ bool copyMap_t() {
     ASSERT_TEST(mapPut(map_1, "key1", "value1") == MAP_SUCCESS);
     ASSERT_TEST(mapPut(map_1, "key2", "value2") == MAP_SUCCESS);
     Map map_2 = mapCopy(map_1);
-    ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
-    ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
+    ASSERT_TEST(!strcmp(mapGet(map_2, "key1"), "value1"));
+    ASSERT_TEST(!strcmp(mapGet(map_2, "key2"), "value2"));
     ASSERT_TEST(mapGetSize(map_2) == mapGetSize(map_1));
     mapDestroy(map_1);
-    ASSERT_TEST(strcmp(mapGet(map_2, "key1"), "value1"));
-    ASSERT_TEST(strcmp(mapGet(map_2, "key2"), "value2"));
+    ASSERT_TEST(!strcmp(mapGet(map_2, "key1"), "value1"));
+    ASSERT_TEST(!strcmp(mapGet(map_2, "key2"), "value2"));
     mapDestroy(map_2);
     return true;
 }
