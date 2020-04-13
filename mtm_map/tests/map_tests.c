@@ -14,6 +14,7 @@ bool createMap_t() {
     ASSERT_TEST(mapGetFirst(map1) == NULL);
     mapPut(map1, "mary", "poppins");
     mapDestroy(map1);
+    map1= NULL;
     ASSERT_TEST(mapGet(map1, "mary") == NULL);
     ASSERT_TEST(mapGetSize(map1) == -1);
     ASSERT_TEST(map2 != NULL);
@@ -101,7 +102,7 @@ bool getSize() {
 
 int main(int argc, char *argv[]) {
     printf("Start Map Tests");
-    putGetFunc_t();
+    //putGetFunc_t();
     copyMap_t();
     getSize();
     createMap_t();

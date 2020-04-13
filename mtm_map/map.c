@@ -205,7 +205,7 @@ MapResult mapRemove(Map map, const char *key) {
     Node curr;
     Node prev;
     curr = map->head;
-    prev = NULL;
+    //prev = NULL;
     MAP_FOREACH(item, map) {
         if (strcmp(item, key) == 0) {
             prev->next = curr->next;
