@@ -23,33 +23,50 @@ bool createMap_t() {
 
 bool putGetFunc_t() {
     Map map1 = mapCreate();
-    char *str1 = (char *) malloc(sizeof(char) * 6);
-    strcpy(str1, "virus");
+    char *str1 = (char *) malloc(7);
+    printf("pleas enter a 6 char word: \n");
+    scanf("%s",str1);
+    char *str1_copy = (char *) malloc(7);
+    strcpy(str1_copy,str1);
     char *str2 = (char *) malloc(7);
-    strcpy(str2, "corona");
+    printf("pleas enter a 6 char word: \n");
+    scanf("%s",str2);
+    char *str2_copy = (char *) malloc(7);
+    strcpy(str2_copy,str2);
     char *str3 = (char *) malloc(7);
-    strcpy(str3, "daniel");
-    MapResult res = mapPut(map1, str1, str2);
-    ASSERT_TEST(res == MAP_SUCCESS);
-    res = mapPut(NULL, str1, str2);
+    printf("pleas enter a 6 char word: \n");
+    scanf("%s",str3);
+    char *str3_copy = (char *) malloc(7);
+    strcpy(str3_copy,str3);
+
+    MapResult res = mapPut(NULL, str1, str2);
     ASSERT_TEST(res == MAP_NULL_ARGUMENT);
     res = mapPut(map1, NULL, str2);
     ASSERT_TEST(res == MAP_NULL_ARGUMENT);
     res = mapPut(map1, str1, NULL);
     ASSERT_TEST(res == MAP_NULL_ARGUMENT);
+    //enter a key and a value, and then delete the origin and compare whit the dict
+    res = mapPut(map1, str1, str2);
+    ASSERT_TEST(res == MAP_SUCCESS);
     free(str2);
     char *res_srt = mapGet(map1, str1);
-    ASSERT_TEST(strcmp(res_srt, "corona"));
+    ASSERT_TEST(strcmp(res_srt, str2_copy));
+    //enter a not existing key
     res_srt = mapGet(map1, "dani");
     ASSERT_TEST(res_srt == NULL);
+    //changing the value of an existing key
     res = mapPut(map1, str1, str3);
     ASSERT_TEST(res == MAP_SUCCESS);
     res_srt = mapGet(map1, str1);
     ASSERT_TEST(strcmp(res_srt, str3));
     free(str1);
     free(str3);
-    res_srt = mapGet(map1, "virus");
-    ASSERT_TEST(strcmp(res_srt, "daniel"));
+    res_srt = mapGet(map1, str1_copy);
+    ASSERT_TEST(strcmp(res_srt, str3_copy));
+
+    free(str1_copy);
+    free(str2_copy);
+    free(str3_copy);
     mapDestroy(map1);
     return true;
 }
@@ -85,9 +102,9 @@ bool getSize() {
 int main(int argc, char *argv[]) {
     printf("Start Map Tests");
     putGetFunc_t();
-    createMap_t();
     copyMap_t();
     getSize();
+    createMap_t();
     return 0;
 }
 
