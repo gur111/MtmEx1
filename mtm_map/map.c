@@ -203,12 +203,16 @@ MapResult mapRemove(Map map, const char *key) {
         return MAP_NULL_ARGUMENT;
     }
     Node curr;
-    Node prev;
+    Node prev = NULL;
     curr = map->head;
-    //prev = NULL;
+    // prev = NULL;
     MAP_FOREACH(item, map) {
         if (strcmp(item, key) == 0) {
+            if (prev == NULL) {
+                map->head = curr->next;
+            } else {
             prev->next = curr->next;
+            }
             map->size--;
             nodeFree(curr);
             return MAP_SUCCESS;
