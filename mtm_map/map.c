@@ -12,7 +12,7 @@ typedef struct {
 typedef struct Node_t {
     Pair data;
     struct Node_t *next;
-} *Node;
+} * Node;
 
 struct Map_t {
     Node head;
@@ -177,9 +177,7 @@ MapResult mapPut(Map map, const char *key, const char *value) {
     return MAP_SUCCESS;
 }
 
-static Node mapGetNode(Map map, const char *key) {
-    return NULL;
-}
+static Node mapGetNode(Map map, const char *key) { return NULL; }
 
 char *mapGet(Map map, const char *key) {
     if (map == NULL || key == NULL) {
@@ -211,7 +209,7 @@ MapResult mapRemove(Map map, const char *key) {
             if (prev == NULL) {
                 map->head = curr->next;
             } else {
-            prev->next = curr->next;
+                prev->next = curr->next;
             }
             map->size--;
             nodeFree(curr);
@@ -257,4 +255,3 @@ MapResult mapClear(Map map) {
     map->head = map->itter = NULL;
     return MAP_SUCCESS;
 }
-
