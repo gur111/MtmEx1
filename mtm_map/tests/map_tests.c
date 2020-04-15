@@ -54,6 +54,7 @@ bool testMapPutGet() {
     ASSERT_TEST(mapRemove(map, key3) == MAP_SUCCESS);
     count--;
     ASSERT_TEST(mapPut(map, key3, "value1") == MAP_SUCCESS);
+    count++;
 
     printf("Verify `PUT` with NULL arguments\n");
     ASSERT_TEST(mapPut(map, key3, NULL) == MAP_NULL_ARGUMENT);
@@ -65,6 +66,7 @@ bool testMapPutGet() {
 
     printf("Make sure added key has the correct value\n");
     ASSERT_TEST(mapPut(map, key1, "value2") == MAP_SUCCESS);
+    count++;
     ASSERT_TEST(strcmp(mapGet(map, key1), "value2") == 0);
     printf("Verify value of key changed\n");
     ASSERT_TEST(mapPut(map, key1, "value1") == MAP_SUCCESS);
@@ -77,6 +79,7 @@ bool testMapPutGet() {
     printf("Verify string value is duplicated on PUT\n");
     const char *value1 = "value1";
     ASSERT_TEST(mapPut(map, key1, value1) == MAP_SUCCESS);
+    count++;
     ASSERT_TEST(mapGet(map, key1) != value1);
     ASSERT_TEST(mapGetSize(map) == count);
 
@@ -101,51 +104,51 @@ bool testMapPutGet() {
 
     printf("Test a super long string\n");
     const char *super_long_string =
-        "Hi— I’m Ted Mosby. And exactly 45 days from now you and I are "
-        "going to meet and we’re going to fall in love and we’re going to "
-        "get married and we’re going to have 2 kids and we’re going to "
-        "love them and each other so much. All that is 45 days away, but "
-        "I’m here now I guess because… I want those extra 45 days with "
-        "you. I want each one of them. Look and if I can’t have them I’ll "
-        "take the 45 seconds before your boyfriend shows up and punches me "
-        "in the face, because… I love you. I’m always gonna love you, til "
-        "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
-        "exactly 45 days from now you and I are "
-        "going to meet and we’re going to fall in love and we’re going to "
-        "get married and we’re going to have 2 kids and we’re going to "
-        "love them and each other so much. All that is 45 days away, but "
-        "I’m here now I guess because… I want those extra 45 days with "
-        "you. I want each one of them. Look and if I can’t have them I’ll "
-        "take the 45 seconds before your boyfriend shows up and punches me "
-        "in the face, because… I love you. I’m always gonna love you, til "
-        "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
-        "exactly 45 days from now you and I are "
-        "going to meet and we’re going to fall in love and we’re going to "
-        "get married and we’re going to have 2 kids and we’re going to "
-        "love them and each other so much. All that is 45 days away, but "
-        "I’m here now I guess because… I want those extra 45 days with "
-        "you. I want each one of them. Look and if I can’t have them I’ll "
-        "take the 45 seconds before your boyfriend shows up and punches me "
-        "in the face, because… I love you. I’m always gonna love you, til "
-        "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
-        "exactly 45 days from now you and I are "
-        "going to meet and we’re going to fall in love and we’re going to "
-        "get married and we’re going to have 2 kids and we’re going to "
-        "love them and each other so much. All that is 45 days away, but "
-        "I’m here now I guess because… I want those extra 45 days with "
-        "you. I want each one of them. Look and if I can’t have them I’ll "
-        "take the 45 seconds before your boyfriend shows up and punches me "
-        "in the face, because… I love you. I’m always gonna love you, til "
-        "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
-        "exactly 45 days from now you and I are "
-        "going to meet and we’re going to fall in love and we’re going to "
-        "get married and we’re going to have 2 kids and we’re going to "
-        "love them and each other so much. All that is 45 days away, but "
-        "I’m here now I guess because… I want those extra 45 days with "
-        "you. I want each one of them. Look and if I can’t have them I’ll "
-        "take the 45 seconds before your boyfriend shows up and punches me "
-        "in the face, because… I love you. I’m always gonna love you, til "
-        "the end of my days and beyond. You’ll see.";
+            "Hi— I’m Ted Mosby. And exactly 45 days from now you and I are "
+            "going to meet and we’re going to fall in love and we’re going to "
+            "get married and we’re going to have 2 kids and we’re going to "
+            "love them and each other so much. All that is 45 days away, but "
+            "I’m here now I guess because… I want those extra 45 days with "
+            "you. I want each one of them. Look and if I can’t have them I’ll "
+            "take the 45 seconds before your boyfriend shows up and punches me "
+            "in the face, because… I love you. I’m always gonna love you, til "
+            "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
+            "exactly 45 days from now you and I are "
+            "going to meet and we’re going to fall in love and we’re going to "
+            "get married and we’re going to have 2 kids and we’re going to "
+            "love them and each other so much. All that is 45 days away, but "
+            "I’m here now I guess because… I want those extra 45 days with "
+            "you. I want each one of them. Look and if I can’t have them I’ll "
+            "take the 45 seconds before your boyfriend shows up and punches me "
+            "in the face, because… I love you. I’m always gonna love you, til "
+            "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
+            "exactly 45 days from now you and I are "
+            "going to meet and we’re going to fall in love and we’re going to "
+            "get married and we’re going to have 2 kids and we’re going to "
+            "love them and each other so much. All that is 45 days away, but "
+            "I’m here now I guess because… I want those extra 45 days with "
+            "you. I want each one of them. Look and if I can’t have them I’ll "
+            "take the 45 seconds before your boyfriend shows up and punches me "
+            "in the face, because… I love you. I’m always gonna love you, til "
+            "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
+            "exactly 45 days from now you and I are "
+            "going to meet and we’re going to fall in love and we’re going to "
+            "get married and we’re going to have 2 kids and we’re going to "
+            "love them and each other so much. All that is 45 days away, but "
+            "I’m here now I guess because… I want those extra 45 days with "
+            "you. I want each one of them. Look and if I can’t have them I’ll "
+            "take the 45 seconds before your boyfriend shows up and punches me "
+            "in the face, because… I love you. I’m always gonna love you, til "
+            "the end of my days and beyond. You’ll see.Hi— I’m Ted Mosby. And "
+            "exactly 45 days from now you and I are "
+            "going to meet and we’re going to fall in love and we’re going to "
+            "get married and we’re going to have 2 kids and we’re going to "
+            "love them and each other so much. All that is 45 days away, but "
+            "I’m here now I guess because… I want those extra 45 days with "
+            "you. I want each one of them. Look and if I can’t have them I’ll "
+            "take the 45 seconds before your boyfriend shows up and punches me "
+            "in the face, because… I love you. I’m always gonna love you, til "
+            "the end of my days and beyond. You’ll see.";
     ASSERT_TEST(mapPut(map, key1, super_long_string) == MAP_SUCCESS);
     ASSERT_TEST(strcmp(mapGet(map, key1), super_long_string) == 0);
     ASSERT_TEST(mapPut(map, super_long_string, value1) == MAP_SUCCESS);
@@ -156,8 +159,8 @@ bool testMapPutGet() {
     ASSERT_TEST(strcmp(mapGet(map, key2), "") == 0);
 
     printf(
-        "Destroy the list without removing all the keys. To let valgrind catch "
-        "de-allocation errors\n");
+            "Destroy the list without removing all the keys. To let valgrind catch "
+            "de-allocation errors\n");
     mapDestroy(map);
     return true;
 }
@@ -206,6 +209,7 @@ bool testMapGetSize() {
     mapDestroy(map);
     return true;
 }
+
 bool testMapContains() {
     Map map1 = mapCreate();
     mapPut(map1, "key1", "value1");
@@ -216,6 +220,7 @@ bool testMapContains() {
     mapDestroy(map1);
     return true;
 }
+
 bool testMapRemove() {
     Map map1 = mapCreate();
     mapPut(map1, "key1", "value1");
@@ -234,11 +239,12 @@ bool testMapRemove() {
     ASSERT_TEST(mapGetSize(map1) == 2);
     return true;
 }
+
 int main(int argc, char *argv[]) {
     printf("Start Map Tests\n");
-    // testMapPutGet();
+    testMapPutGet();
     testMapCopy();
-    // testMapGetSize();
+    testMapGetSize();
     testMapCreate();
     testMapContains();
     testMapRemove();
