@@ -73,8 +73,8 @@ static Node nodeCreate(const char *key, const char *value) {
         return NULL;
     }
 
-    strcpy(node->data.key, key);
-    strcpy(node->data.value, value);
+    memcpy(node->data.key, key,strlen(key)+1);
+    memcpy(node->data.value, value,strlen(value)+1);
 
     return node;
 }
@@ -168,7 +168,7 @@ MapResult mapPut(Map map, const char *key, const char *value) {
             return MAP_OUT_OF_MEMORY;
         }
 
-        strcpy(new_value_memory, value);
+        memcpy(new_value_memory, value,strlen(value)+1);
 
         // We used realloc so no need to use free on the old address
         node->data.value = new_value_memory;
