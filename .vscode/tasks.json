@@ -4,8 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "buildAll",
-            // "label": "buildQ1",
+            "label": "buildQ1",
             "type": "shell",
             "command": "cmake",
             "args": [
@@ -14,8 +13,7 @@
                 "--config",
                 "Debug",
                 "--target",
-                "all"
-                // "Q1Tester"
+                "Q1Tester"
             ],
             "presentation": {
                 "echo": true,

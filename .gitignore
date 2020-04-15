@@ -1,6 +1,10 @@
 
 # .vscode/
+.idea
+*.iml
 
 build/
 *.o
 *.cmake
+cmake-build-debug/
+*.out

@@ -7,20 +7,6 @@
 
 #define LIST_AS_STR_MAX_SIZE 3000
 #define NODE_AS_STR_MAX_SIZE 50
-#define PRINT_LIST(list)                       \
-    {                                          \
-        Node list_tmp = list;                  \
-        printf(#list ":\n\t");                 \
-        if (list_tmp == NULL) {                \
-            printf("NULL\n");                  \
-        } else {                               \
-            while (list_tmp != NULL) {         \
-                printf("%.2d->", list_tmp->x); \
-                list_tmp = list_tmp->next;     \
-            }                                  \
-            printf("NULL\n");                  \
-        }                                      \
-    }
 
 Node copyNode(Node n) {
     Node newNode = malloc(sizeof(*n));
@@ -145,8 +131,8 @@ bool testOnce(int test_num) {
             tmp_value = rand() % 400;
             tmp_value = tmp_value ? (rand() % 5) : (-1);
             curr->next->x =
-                curr->x +
-                tmp_value;  // Generate a series which is likely rising
+                    curr->x +
+                    tmp_value;  // Generate a series which is likely rising
             curr = curr->next;
             count--;
         }
@@ -163,7 +149,7 @@ bool testOnce(int test_num) {
     Node merged_actual = NULL, merged_expected = NULL;
     Node *merge_actual_address = (rand() % 10) ? &merged_actual : NULL;
     ErrorCode merge_status =
-        mergeSortedLists(lists[0], lists[1], merge_actual_address);
+            mergeSortedLists(lists[0], lists[1], merge_actual_address);
     char *list1_after = listToString(lists[0]);
     char *list2_after = listToString(lists[1]);
     if (merge_actual_address && lists[0] && lists[1] &&
@@ -193,8 +179,8 @@ bool testOnce(int test_num) {
     } else if (merge_status == MEMORY_ERROR) {
         if (merged_actual != NULL) {
             printf(
-                "Extecped merged_actual (MEMORY_ERROR) to be NULL but got %p\n",
-                (void *)merged_actual);
+                    "Extecped merged_actual (MEMORY_ERROR) to be NULL but got %p\n",
+                    (void *) merged_actual);
             status = false;
         }
     } else {
