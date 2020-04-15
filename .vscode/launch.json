@@ -22,7 +22,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "buildQ1"
+            "preLaunchTask": "buildAll"
         },
         {
             "name": "Election",
@@ -42,7 +42,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "buildElection"
+            "preLaunchTask": "buildAll"
         }
     ]
 }
