@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 #include "../../test_utilities.h"
 #include "../map.h"
 
@@ -9,6 +9,8 @@ bool testMapCreate() {
     printf("Testing mapCreate\n");
     Map map1 = mapCreate();
     Map map2 = mapCreate();
+    Map map3 = mapCreate();
+    mapDestroy(map3);
     ASSERT_TEST(map1 != NULL);
     ASSERT_TEST(map2 != NULL);
     ASSERT_TEST(mapGetSize(map1) == 0);
@@ -157,11 +159,10 @@ bool testMapPutGet() {
     ASSERT_TEST(strcmp(mapGet(map, super_long_string), value1) == 0);
     ASSERT_TEST(mapGetSize(map) == count);
     ASSERT_TEST(strcmp(mapGet(map, key2), "") == 0);
-
+    mapDestroy(map);
     printf(
             "Destroy the list without removing all the keys. To let valgrind catch "
             "de-allocation errors\n");
-    mapDestroy(map);
     return true;
 }
 
@@ -240,14 +241,66 @@ bool testMapRemove() {
     mapDestroy(map1);
     return true;
 }
+/*
+char *randstring(int length) {
+    static int mySeed = 25011984;
+    char *string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";
+    size_t stringLen = strlen(string);
+    char *randomString = NULL;
 
+    srand(time(NULL) * length + ++mySeed);
+
+    if (length < 1) {
+        length = 1;
+    }
+
+    randomString = malloc(sizeof(char) * (length + 1));
+
+    if (randomString) {
+        short key = 0;
+
+        for (int n = 0; n < length; n++) {
+            key = rand() % stringLen;
+            randomString[n] = string[key];
+        }
+
+        randomString[length] = '\0';
+
+        return randomString;
+    } else {
+        printf("No memory");
+        exit(1);
+    }
+}
+
+bool doomsDay() {
+    Map map = mapCreate();
+    int length = 100;
+    char *arr[length];
+    for (int i = 0; i < length; i++) {
+        char *str = randstring(i);
+        ASSERT_TEST(mapPut(map, str, str)==MAP_SUCCESS);
+        arr[i] = str;
+    }
+    ASSERT_TEST(mapGetSize(map)==length);
+    for (int i = 0; i < length; i++) {
+        ASSERT_TEST(strcmp(mapGet(map, arr[i]), arr[i])==0);
+        ASSERT_TEST(mapRemove(map,arr[i])==MAP_SUCCESS);
+        free(arr[i]);
+    }
+    mapDestroy(map);
+    return true;
+}
+*/
 int main(int argc, char *argv[]) {
     printf("Start Map Tests\n");
-    testMapPutGet();
+    //testMapPutGet();
     testMapCopy();
     testMapGetSize();
     testMapCreate();
     testMapContains();
     testMapRemove();
+    //doomsDay();
+    printf("end Map Tests\n");
     return 0;
 }
