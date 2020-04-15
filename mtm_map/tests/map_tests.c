@@ -237,6 +237,7 @@ bool testMapRemove() {
     mapRemove(map1, "key3");
     ASSERT_TEST(mapContains(map1, "key3") == false);
     ASSERT_TEST(mapGetSize(map1) == 2);
+    mapDestroy(map1);
     return true;
 }
 
