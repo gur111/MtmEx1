@@ -241,7 +241,7 @@ bool testMapRemove() {
     mapDestroy(map1);
     return true;
 }
-/*
+
 char *randstring(int length) {
     static int mySeed = 25011984;
     char *string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-#'?!";
@@ -291,10 +291,10 @@ bool doomsDay() {
     mapDestroy(map);
     return true;
 }
-*/
+
 int main(int argc, char *argv[]) {
     printf("Start Map Tests\n");
-    //testMapPutGet();
+    testMapPutGet();
     testMapCopy();
     testMapGetSize();
     testMapCreate();
