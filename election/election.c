@@ -11,9 +11,15 @@ struct election_t {
 
 Election electionCreate() {
     Election election = malloc(sizeof(*election));
+    if (election == NULL) {
+        return NULL;
+    }
     election->tribe_head = mapCreate();
     election->area_name_id = mapCreate();
     election->tribe_name_id = mapCreate();
+    if (election->tribe_name_id == NULL||election->tribe_head == NULL||election->area_name_id == NULL){
+        return NULL;
+    }
     return election;
 }
 
@@ -21,22 +27,43 @@ void electionDestroy(Election election) {
 }
 
 static char *intPointerToString(int *pointer) {
-    char *tribe_string_id = malloc(sizeof(pointer));
-    sprintf(tribe_string_id, "%p", (void *) pointer);
-    return tribe_string_id;
+    char *string = malloc(sizeof(pointer));
+    if (string==NULL){
+        return NULL;
+    }
+    sprintf(string, "%p", (void *) pointer);
+    return string;
 }
 
 static char *mapPointerToString(Map pointer) {
-    char *tribe_string_id = malloc(sizeof(pointer));
-    sprintf(tribe_string_id, "%p", (void *) pointer);
-    return tribe_string_id;
+    char *string = malloc(sizeof(pointer));
+    if (string==NULL){
+        return NULL;
+    }
+    sprintf(string, "%p", (void *) pointer);
+    return string;
 }
 
 ElectionResult electionAddTribe(Election election, int tribe_id, const char *tribe_name) {
-    Map map = mapCreate();
+    if (election == NULL || tribe_name == NULL) {
+        return ELECTION_NULL_ARGUMENT;
+    }
+    if (tribe_id < 0) {
+        return ELECTION_INVALID_ID;
+    }
     int *p_tribe_id = &tribe_id;
-    mapPut(election->tribe_head, intPointerToString(p_tribe_id), mapPointerToString(map));
-    mapPut(election->tribe_name_id, intPointerToString(p_tribe_id), tribe_name);
+    char *string_tribe_id = intPointerToString(p_tribe_id);
+    if (string_tribe_id==NULL){
+        electionDestroy(election);
+        return ELECTION_OUT_OF_MEMORY;
+    }
+    if (mapContains(election->tribe_name_id, string_tribe_id) == true) {
+        return ELECTION_TRIBE_ALREADY_EXIST;
+    }
+    if (mapPut(election->tribe_name_id, string_tribe_id, tribe_name) == MAP_OUT_OF_MEMORY){
+        electionDestroy(election);
+        return ELECTION_OUT_OF_MEMORY;
+    }
     return ELECTION_SUCCESS;
 }
 
