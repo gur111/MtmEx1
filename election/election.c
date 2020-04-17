@@ -24,7 +24,9 @@ Election electionCreate() {
 }
 
 static Map stringToPointerMap(char *string) {
-    return false;
+    void *map;
+    sscanf(string, "%p", &map);
+    return (Map) map;
 }
 
 void electionDestroy(Election election) {
@@ -137,7 +139,19 @@ ElectionResult electionAddArea(Election election, int area_id, const char *area_
 }
 
 const char *electionGetTribeName(Election election, int tribe_id) {
-    return false;
+    if (election == NULL) {
+        return NULL;
+    }
+    int *p_tribe_id = &tribe_id;
+    char *string_tribe_id = intPointerToString(p_tribe_id);
+    if (string_tribe_id == NULL) {
+        return NULL;
+    }
+    if (mapContains(election->tribe_name_id, string_tribe_id) == false) {
+        return NULL;
+    }
+    return mapGet(election->tribe_name_id, string_tribe_id);
+
 }
 
 ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int num_of_votes) {
@@ -164,12 +178,3 @@ Map electionComputeAreasToTribesMapping(Election election) {
     return false;
 }
 
-int main() {
-    Election elec = electionCreate();
-    electionAddArea(elec, 4, "dani");
-    MAP_FOREACH(item, elec->area_name_id) {
-        char *a = mapGet(elec->area_name_id, item);
-        a = NULL;
-    }
-    return 0;
-}
