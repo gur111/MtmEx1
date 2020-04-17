@@ -23,7 +23,18 @@ Election electionCreate() {
     return election;
 }
 
+static Map stringToPointerMap(char *string) {
+    return false;
+}
+
 void electionDestroy(Election election) {
+    MAP_FOREACH(area_id, election->tribe_head) {
+        mapDestroy(stringToPointerMap(mapGet(election->tribe_head, area_id)));
+    }
+    mapDestroy(election->tribe_head);
+    mapDestroy(election->area_name_id);
+    mapDestroy(election->tribe_name_id);
+    free(election);
 }
 
 static bool lowerCaseCheck(const char *string) {
@@ -67,6 +78,7 @@ ElectionResult electionAddTribe(Election election, int tribe_id, const char *tri
     int *p_tribe_id = &tribe_id;
     char *string_tribe_id = intPointerToString(p_tribe_id);
     if (string_tribe_id == NULL) {
+        free(string_tribe_id);
         electionDestroy(election);
         return ELECTION_OUT_OF_MEMORY;
     }
@@ -75,8 +87,10 @@ ElectionResult electionAddTribe(Election election, int tribe_id, const char *tri
     }
     if (mapPut(election->tribe_name_id, string_tribe_id, tribe_name) == MAP_OUT_OF_MEMORY) {
         electionDestroy(election);
+        free(string_tribe_id);
         return ELECTION_OUT_OF_MEMORY;
     }
+    free(string_tribe_id);
     return ELECTION_SUCCESS;
 }
 
@@ -101,14 +115,24 @@ ElectionResult electionAddArea(Election election, int area_id, const char *area_
     }
     if (mapPut(election->area_name_id, string_area_id, area_name) == MAP_OUT_OF_MEMORY) {
         electionDestroy(election);
+        free(string_area_id);
         return ELECTION_OUT_OF_MEMORY;
     }
     Map map_tribe_votes = mapCreate();
-    char * string_map_tribe_votes = mapPointerToString(map_tribe_votes);
-    if(mapPut(election->tribe_head,string_area_id,string_map_tribe_votes)==MAP_OUT_OF_MEMORY){
+    char *string_map_tribe_votes = mapPointerToString(map_tribe_votes);
+    if (string_map_tribe_votes == NULL) {
+        free(string_area_id);
         electionDestroy(election);
         return ELECTION_OUT_OF_MEMORY;
     }
+    if (mapPut(election->tribe_head, string_area_id, string_map_tribe_votes) == MAP_OUT_OF_MEMORY) {
+        free(string_area_id);
+        free(string_map_tribe_votes);
+        electionDestroy(election);
+        return ELECTION_OUT_OF_MEMORY;
+    }
+    free(string_area_id);
+    free(string_map_tribe_votes);
     return ELECTION_SUCCESS;
 }
 
@@ -140,4 +164,12 @@ Map electionComputeAreasToTribesMapping(Election election) {
     return false;
 }
 
-
+int main() {
+    Election elec = electionCreate();
+    electionAddArea(elec, 4, "dani");
+    MAP_FOREACH(item, elec->area_name_id) {
+        char *a = mapGet(elec->area_name_id, item);
+        a = NULL;
+    }
+    return 0;
+}
