@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 #include "../../test_utilities.h"
 #include "../map.h"
 
