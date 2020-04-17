@@ -8,3 +8,4 @@ build/
 *.cmake
 cmake-build-debug/
 *.out
+.vscode/c_cpp_properties.json
