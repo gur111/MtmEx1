@@ -65,8 +65,8 @@ static Node nodeCreate(const char *key, const char *value) {
     // To avoid accessing invalid addresses (and sets size to 0)
     memset(node, 0, sizeof(*node));
 
-    node->data.key = malloc(sizeof(strlen(key) + 1));
-    node->data.value = malloc(sizeof(strlen(value) + 1));
+    node->data.key = malloc(strlen(key) + 1);
+    node->data.value = malloc(strlen(value) + 1);
 
     if (node->data.key == NULL || node->data.value == NULL) {
         nodeFree(node);
@@ -209,7 +209,6 @@ MapResult mapRemove(Map map, const char *key) {
     Node curr;
     Node prev = NULL;
     curr = map->head;
-    // prev = NULL;
     MAP_FOREACH(item, map) {
         if (strcmp(item, key) == 0) {
             if (prev == NULL) {
