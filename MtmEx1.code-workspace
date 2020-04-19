@@ -6,7 +6,8 @@
 	],
 	"settings": {
 		"files.associations": {
-			"test_utilities.h": "c"
+			"test_utilities.h": "c",
+			"augmented_map.h": "c"
 		}
 	}
 }
