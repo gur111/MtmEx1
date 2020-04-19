@@ -2,7 +2,6 @@
 #include "void_map.h"
 
 
-
 static char *intToStr(int num) {
     char *str = malloc(MAX_INT_AS_STR_SIZE * sizeof(char));
 
@@ -43,7 +42,7 @@ static char *ptrToStr(void *ptr) {
 }
 
 
-bool mapContains(AugMap map, int key){
+bool mapContains(AugMap map, int key) {
     char *strKey = intToStr(key);
     bool result = mapContains(map, strKey);
     free(strKey);

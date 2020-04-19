@@ -32,7 +32,7 @@ ElectionResult electionAddTribe(Election election, int tribe_id, const char *tri
 
 ElectionResult electionAddArea(Election election, int area_id, const char *area_name);
 
-const char *electionGetTribeName(Election election, int tribe_id);
+char *electionGetTribeName(Election election, int tribe_id);
 
 ElectionResult electionAddVote(Election election, int area_id, int tribe_id, int num_of_votes);
 
