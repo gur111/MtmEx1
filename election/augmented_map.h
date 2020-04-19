@@ -28,6 +28,8 @@ AugMapResult augMapPutMap(AugMap map, int key, AugMap data);
 AugMapResult mapPutStr(AugMap map, int key, char *data);
 AugMapResult mapPutInt(AugMap map, int key, int value);
 
+AugMapResult augMapRemove(AugMap map, int key);
+
 AugMapResult augMapContains(AugMap map, int key, bool *result);
 
 AugMap augMapGetFirstMap(AugMap map);

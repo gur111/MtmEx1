@@ -170,6 +170,29 @@ AugMapResult augMapGetStr(AugMap map, int key, char **result) {
     return AUG_MAP_SUCCESS;
 }
 
+AugMapResult mapResultToAugMapResult(MapResult result) {
+    // Remap error codes
+    switch (result) {
+        case MAP_SUCCESS:
+            return AUG_MAP_SUCCESS;
+
+        case MAP_OUT_OF_MEMORY:
+            return AUG_MAP_OUT_OF_MEMORY;
+
+        case MAP_NULL_ARGUMENT:
+            return AUG_MAP_NULL_ARGUMENT;
+
+        case MAP_ITEM_ALREADY_EXISTS:
+            return AUG_MAP_ITEM_ALREADY_EXISTS;
+
+        case MAP_ITEM_DOES_NOT_EXIST:
+            return AUG_MAP_ITEM_DOES_NOT_EXIST;
+
+        default:
+            return AUG_MAP_ERROR;
+    }
+}
+
 AugMapResult augMapGetInt(AugMap map, int key, int *result) {
     if (result == NULL) {
         return AUG_MAP_NULL_ARGUMENT;
@@ -207,29 +230,11 @@ static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
         return AUG_MAP_OUT_OF_MEMORY;
     }
 
-    MapResult status = mapPut(map->map, str_key, str_value);
+    AugMapResult status =
+        mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
     free(str_key);
 
-    // Remap error codes
-    switch (status) {
-        case MAP_SUCCESS:
-            return AUG_MAP_SUCCESS;
-
-        case MAP_OUT_OF_MEMORY:
-            return AUG_MAP_OUT_OF_MEMORY;
-
-        case MAP_NULL_ARGUMENT:
-            return AUG_MAP_NULL_ARGUMENT;
-
-        case MAP_ITEM_ALREADY_EXISTS:
-            return AUG_MAP_ITEM_ALREADY_EXISTS;
-
-        case MAP_ITEM_DOES_NOT_EXIST:
-            return AUG_MAP_ITEM_DOES_NOT_EXIST;
-
-        default:
-            return AUG_MAP_ERROR;
-    }
+    return status;
 }
 
 AugMapResult augMapPutMap(AugMap map, int key, AugMap data) {
@@ -289,15 +294,50 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return AUG_MAP_SUCCESS;
         case AUG_MAP_OUT_OF_MEMORY:
-            return AUG_MAP_OUT_OF_MEMORY;
         case AUG_MAP_NULL_ARGUMENT:
-            return AUG_MAP_NULL_ARGUMENT;
         default:
-            return AUG_MAP_ERROR;
+            return status;
     }
 }
 
+AugMapResult augMapRemove(AugMap map, int key) {
+    if (map == NULL) {
+        return AUG_MAP_NULL_ARGUMENT;
+    }
+    char *str_key = intToStr(key);
+    if (str_key == NULL) {
+        return AUG_MAP_OUT_OF_MEMORY;
+    }
 
+    // If the value is of type AugMap, get it and destroy it (avoid mem leaks)
+    if (map->type == MAP_TYPE) {
+        AugMap sub_map;
+        AugMapResult status = augMapGetMap(map, key, &sub_map);
+        if(status != AUG_MAP_SUCCESS){
+            free(str_key);
+            return status;
+        }
+
+        augMapDestroy(sub_map);
+    }
+    free(str_key);
+    return mapResultToAugMapResult(mapRemove(map->map, str_key));
+}
+
+AugMap augMapGetFirstMap(AugMap map) {
+    if (map == NULL || map->type != MAP_TYPE) {
+        return NULL;
+    }
+
+    return (AugMap)strToPtr(mapGetFirst(map->map));
+}
+
+AugMap augMapGetNextMap(AugMap map) {
+    if (map == NULL || map->type != MAP_TYPE) {
+        return NULL;
+    }
+    return (AugMap)strToPtr(mapGetNext(map->map));
+}
 
 /**
  * "Recursively" free map with all of its submaps (if there are any)
