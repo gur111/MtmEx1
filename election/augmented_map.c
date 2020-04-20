@@ -88,6 +88,10 @@ AugMap augMapCreate(AugMapType type) {
     return map;
 }
 
+AugMapType augMapGetType(AugMap map) {
+    return map == NULL ? UNKNOWN : map->type;
+}
+
 /**
  * Gets a string value from map (not a copy).
  * Enforces expected type after conversion.
@@ -313,7 +317,7 @@ AugMapResult augMapRemove(AugMap map, int key) {
     if (map->type == MAP_TYPE) {
         AugMap sub_map;
         AugMapResult status = augMapGetMap(map, key, &sub_map);
-        if(status != AUG_MAP_SUCCESS){
+        if (status != AUG_MAP_SUCCESS) {
             free(str_key);
             return status;
         }
