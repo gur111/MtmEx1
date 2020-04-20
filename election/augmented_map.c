@@ -63,9 +63,10 @@ static char *ptrToStr(void *ptr) {
 }
 
 static void *strToPtr(char *ptr_as_str) {
-    void *ptr;
+    void *ptr = NULL;
     assert(ptr_as_str != NULL);
-    assert(sscanf(ptr_as_str, "%p", &ptr) == 1);
+    sscanf(ptr_as_str, "%p", &ptr);
+    assert(ptr != NULL);
 
     return ptr;
 }
@@ -88,9 +89,11 @@ AugMap augMapCreate(AugMapType type) {
     return map;
 }
 
+#ifndef NDEBUG
 AugMapType augMapGetType(AugMap map) {
     return map == NULL ? UNKNOWN : map->type;
 }
+#endif
 
 /**
  * Gets a string value from map (not a copy).
@@ -164,12 +167,31 @@ AugMapResult augMapGetStr(AugMap map, int key, char **result) {
     }
 
     assert(str_value != NULL);
-
-    if ((*result = malloc(strlen(str_value) + 1)) == NULL) {
+    *result = malloc(strlen(str_value) + 1);
+    if (*result == NULL) {
         return AUG_MAP_OUT_OF_MEMORY;
     }
 
     strcpy(*result, str_value);
+
+    return AUG_MAP_SUCCESS;
+}
+
+AugMapResult augMapGetInt(AugMap map, int key, int *result) {
+    if (result == NULL) {
+        return AUG_MAP_NULL_ARGUMENT;
+    }
+    *result = 0;
+
+    char *str_value;
+    AugMapResult status = augMapGet(map, INT_TYPE, key, &str_value);
+    if (status != AUG_MAP_SUCCESS) {
+        return status;
+    }
+
+    assert(str_value != NULL);
+
+    *result = strToInt(str_value);
 
     return AUG_MAP_SUCCESS;
 }
@@ -195,25 +217,6 @@ AugMapResult mapResultToAugMapResult(MapResult result) {
         default:
             return AUG_MAP_ERROR;
     }
-}
-
-AugMapResult augMapGetInt(AugMap map, int key, int *result) {
-    if (result == NULL) {
-        return AUG_MAP_NULL_ARGUMENT;
-    }
-    *result = 0;
-
-    char *str_value;
-    AugMapResult status = augMapGet(map, INT_TYPE, key, &str_value);
-    if (status != AUG_MAP_SUCCESS) {
-        return status;
-    }
-
-    assert(str_value != NULL);
-
-    *result = strToInt(str_value);
-
-    return AUG_MAP_SUCCESS;
 }
 
 static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
@@ -312,11 +315,11 @@ AugMapResult augMapRemove(AugMap map, int key) {
     if (str_key == NULL) {
         return AUG_MAP_OUT_OF_MEMORY;
     }
-
+    AugMapResult status;
     // If the value is of type AugMap, get it and destroy it (avoid mem leaks)
     if (map->type == MAP_TYPE) {
         AugMap sub_map;
-        AugMapResult status = augMapGetMap(map, key, &sub_map);
+        status = augMapGetMap(map, key, &sub_map);
         if (status != AUG_MAP_SUCCESS) {
             free(str_key);
             return status;
@@ -324,8 +327,9 @@ AugMapResult augMapRemove(AugMap map, int key) {
 
         augMapDestroy(sub_map);
     }
+    status = mapResultToAugMapResult(mapRemove(map->map, str_key));
     free(str_key);
-    return mapResultToAugMapResult(mapRemove(map->map, str_key));
+    return status;
 }
 
 AugMap augMapGetFirstMap(AugMap map) {

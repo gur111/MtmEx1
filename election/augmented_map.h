@@ -29,17 +29,13 @@ AugMapResult augMapPutStr(AugMap map, int key, char *data);
 AugMapResult augMapPutInt(AugMap map, int key, int value);
 
 AugMapResult augMapRemove(AugMap map, int key);
-
 AugMapResult augMapContains(AugMap map, int key, bool *result);
-
+#ifndef NDEBUG
 AugMapType augMapGetType(AugMap map);
-
+#endif
 AugMap augMapGetFirstMap(AugMap map);
-
 AugMap augMapGetNextMap(AugMap map);
-
 void augMapDestroy(AugMap map);
-
 AugMapResult augMapRemove(AugMap map, int key);
 
 /*!
