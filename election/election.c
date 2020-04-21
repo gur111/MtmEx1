@@ -186,17 +186,17 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id) {
 
 ElectionResult electionRemoveAreas(Election election,
                                    AreaConditionFunction should_delete_area) {
-    if(election == NULL || should_delete_area == NULL){
+    if (election == NULL || should_delete_area == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
-    AUG_MAP_FOREACH_MAP(key,election->areas){
-        if(should_delete_area(key)){
-            AugMapResult status = augMapRemove(election->areas,key);
-            if (status == AUG_MAP_OUT_OF_MEMORY){
+    AUG_MAP_FOREACH_MAP(key, election->areas) {
+        if (should_delete_area(key)) {
+            AugMapResult status = augMapRemove(election->areas, key);
+            if (status == AUG_MAP_OUT_OF_MEMORY) {
                 return ELECTION_OUT_OF_MEMORY;
             }
-            status = augMapRemove(election->votes_by_area,key);
-            if (status == AUG_MAP_OUT_OF_MEMORY){
+            status = augMapRemove(election->votes_by_area, key);
+            if (status == AUG_MAP_OUT_OF_MEMORY) {
                 return ELECTION_OUT_OF_MEMORY;
             }
         }
@@ -266,6 +266,39 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
 }
 
 Map electionComputeAreasToTribesMapping(Election election) {
-
-    return false;
+    AugMap map = augMapCreate(INT_TYPE);
+    AUG_MAP_FOREACH_MAP(area, election->votes_by_area) {
+        bool is_map_empty = true;
+        int wining_votes = 0;
+        int wining_tribe_id;
+        AugMap tribe_votes_map;
+        AugMapResult status = augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
+        if (status != AUG_MAP_SUCCESS){
+            return NULL;
+        }
+        AUG_MAP_FOREACH_MAP(tribe,tribe_votes_map) {
+            int t_votes;
+            status = augMapGetInt(tribe_votes_map, area, &t_votes);
+            if (status!= AUG_MAP_SUCCESS){
+                return NULL;
+            }
+            if (is_map_empty) {
+                is_map_empty = false;
+                wining_votes = t_votes;
+                wining_tribe_id = tribe;
+            }
+            if (wining_tribe_id > tribe && wining_votes == t_votes) {
+                wining_tribe_id = tribe;
+            }
+            if (t_votes > wining_tribe_id){
+                wining_tribe_id = tribe;
+                wining_votes = t_votes;
+            }
+        }
+        status = augMapPutInt(map, area,wining_tribe_id);
+        if (status!= AUG_MAP_SUCCESS){
+            return NULL;
+        }
+    }
+    return augMapConvertToMap(map);
 }

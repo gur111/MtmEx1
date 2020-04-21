@@ -90,9 +90,11 @@ AugMap augMapCreate(AugMapType type) {
 }
 
 #ifndef NDEBUG
+
 AugMapType augMapGetType(AugMap map) {
     return map == NULL ? UNKNOWN : map->type;
 }
+
 #endif
 
 /**
@@ -145,7 +147,7 @@ AugMapResult augMapGetMap(AugMap map, int key, AugMap *result) {
 
     assert(str_value != NULL);
 
-    *result = (AugMap)strToPtr(str_value);
+    *result = (AugMap) strToPtr(str_value);
     return AUG_MAP_SUCCESS;
 }
 
@@ -238,7 +240,7 @@ static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
     }
 
     AugMapResult status =
-        mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
+            mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
     free(str_key);
 
     return status;
@@ -337,14 +339,14 @@ AugMap augMapGetFirstMap(AugMap map) {
         return NULL;
     }
 
-    return (AugMap)strToPtr(mapGetFirst(map->map));
+    return (AugMap) strToPtr(mapGetFirst(map->map));
 }
 
 AugMap augMapGetNextMap(AugMap map) {
     if (map == NULL || map->type != MAP_TYPE) {
         return NULL;
     }
-    return (AugMap)strToPtr(mapGetNext(map->map));
+    return (AugMap) strToPtr(mapGetNext(map->map));
 }
 
 /**
@@ -366,4 +368,14 @@ void augMapDestroy(AugMap map) {
 
     mapDestroy(map->map);
     free(map);
+}
+
+Map augMapConvertToMap(AugMap augMap) {
+    if (augMap == NULL) {
+        return NULL;
+    }
+
+    Map map = augMap->map;
+    free(augMap);
+    return map;
 }
