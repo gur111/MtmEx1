@@ -41,6 +41,7 @@ AugMap augMapGetNext(AugMap map);
 void augMapDestroy(AugMap map);
 AugMapResult augMapRemove(AugMap map, int key);
 Map augMapConvertToMap(AugMap map);
+
 /*!
  * Macros for iterating over a map's values.
  * Declares a new iterator for the loop.
