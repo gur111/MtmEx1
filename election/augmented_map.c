@@ -7,29 +7,17 @@
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
 #define MAX_PTR_AS_STR_SIZE 20
 // Supports up to 64 bit integers
-#define MAX_INT_AS_STR_SIZE 22
+#define MAX_STR_KEY_SIZE 21
 
 struct AugMap_t {
     Map map;
     AugMapType type;
 };
 
-static char *intToStr(int num) {
-    char *str = malloc(MAX_INT_AS_STR_SIZE * sizeof(char));
-
-    if (str == NULL) {
-        return NULL;
-    }
-
-    sprintf(str, "%d", num);
-
-    char *shrunken_str = realloc(str, strlen(str) + 1);
-    if (shrunken_str == NULL) {
-        free(str);
-        return NULL;
-    }
-
-    return shrunken_str;
+static void intToStr(int num, char *result) {
+    assert(result != NULL);
+    sprintf(result, "%d", num);
+    return result;
 }
 
 static int strToInt(char *str) {
@@ -115,14 +103,10 @@ static AugMapResult augMapGet(AugMap map, AugMapType type, int key,
         return AUG_MAP_INVALID_TYPE;
     }
 
-    char *str_key = intToStr(key);
-
-    if (str_key == NULL) {
-        return AUG_MAP_OUT_OF_MEMORY;
-    }
+    char str_key[MAX_STR_KEY_SIZE];
+    intToStr(key, str_key);
 
     char *str_value = mapGet(map->map, str_key);
-    free(str_key);
 
     if (str_value == NULL) {
         return AUG_MAP_ITEM_DOES_NOT_EXIST;
@@ -233,15 +217,11 @@ static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
         return AUG_MAP_INVALID_TYPE;
     }
 
-    char *str_key = intToStr(key);
-
-    if (str_key == NULL) {
-        return AUG_MAP_OUT_OF_MEMORY;
-    }
+    char str_key[MAX_STR_KEY_SIZE];
+    intToStr(key, str_key);
 
     AugMapResult status =
-            mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
-    free(str_key);
+        mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
 
     return status;
 }
@@ -270,14 +250,10 @@ AugMapResult augMapPutStr(AugMap map, int key, char *data) {
 }
 
 AugMapResult augMapPutInt(AugMap map, int key, int value) {
-    char *str_value = intToStr(value);
-    if (str_value == NULL) {
-        return AUG_MAP_OUT_OF_MEMORY;
-    }
+    char str_value[MAX_STR_KEY_SIZE];
+    intToStr(key, str_value);
 
-    AugMapResult status = augMapPut(map, INT_TYPE, key, str_value);
-    free(str_value);
-    return status;
+    return augMapPut(map, INT_TYPE, key, str_value);
 }
 
 AugMapResult augMapContains(AugMap map, int key, bool *result) {
@@ -286,14 +262,11 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
     }
     *result = false;
 
-    char *str_key = intToStr(key);
-    if (str_key == NULL) {
-        return AUG_MAP_OUT_OF_MEMORY;
-    }
+    char str_key[MAX_STR_KEY_SIZE];
+    intToStr(key, str_key);
 
     char *value_str;
     AugMapResult status = augMapGet(map, UNKNOWN, str_key, &value_str);
-    free(str_key);
     // Should never happen when passing UNKNOWN
     assert(status != AUG_MAP_INVALID_TYPE);
 
@@ -313,40 +286,36 @@ AugMapResult augMapRemove(AugMap map, int key) {
     if (map == NULL) {
         return AUG_MAP_NULL_ARGUMENT;
     }
-    char *str_key = intToStr(key);
-    if (str_key == NULL) {
-        return AUG_MAP_OUT_OF_MEMORY;
-    }
+    char str_key[MAX_STR_KEY_SIZE];
+    intToStr(key, str_key);
+
     AugMapResult status;
     // If the value is of type AugMap, get it and destroy it (avoid mem leaks)
     if (map->type == MAP_TYPE) {
         AugMap sub_map;
         status = augMapGetMap(map, key, &sub_map);
         if (status != AUG_MAP_SUCCESS) {
-            free(str_key);
             return status;
         }
 
         augMapDestroy(sub_map);
     }
     status = mapResultToAugMapResult(mapRemove(map->map, str_key));
-    free(str_key);
     return status;
 }
 
-AugMap augMapGetFirstMap(AugMap map) {
-    if (map == NULL || map->type != MAP_TYPE) {
+AugMap augMapGetFirst(AugMap map) {
+    if (map == NULL) {
         return NULL;
     }
-
-    return (AugMap) strToPtr(mapGetFirst(map->map));
+    return strToInt(mapGetFirst(map->map));
 }
 
-AugMap augMapGetNextMap(AugMap map) {
-    if (map == NULL || map->type != MAP_TYPE) {
+AugMap augMapGetNext(AugMap map) {
+    if (map == NULL) {
         return NULL;
     }
-    return (AugMap) strToPtr(mapGetNext(map->map));
+    return strToInt(mapGetNext(map->map));
 }
 
 /**
@@ -360,10 +329,17 @@ void augMapDestroy(AugMap map) {
     assert(map->type != UNKNOWN);
 
     if (map->type == MAP_TYPE) {
+        AugMap sub_map;
+        AugMapResult status;
         // It may seem recursive, it may smell recursive, it may sound, it may
         // even taste recursive It isn't really, sub maps will never be map of
         // maps. See `augMapPutMap`
-        AUG_MAP_FOREACH_MAP(sub_map, map) { augMapDestroy(sub_map); }
+        AUG_MAP_FOREACH(key, map) {
+            status = augMapGetMap(map, key, &sub_map);
+            assert(status == AUG_MAP_SUCCESS);
+            assert(sub_map->type != MAP_TYPE);
+            augMapDestroy(sub_map);
+        }
     }
 
     mapDestroy(map->map);

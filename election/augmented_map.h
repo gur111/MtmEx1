@@ -33,8 +33,11 @@ AugMapResult augMapContains(AugMap map, int key, bool *result);
 #ifndef NDEBUG
 AugMapType augMapGetType(AugMap map);
 #endif
-AugMap augMapGetFirstMap(AugMap map);
-AugMap augMapGetNextMap(AugMap map);
+
+// Handle foreach iterations
+AugMap augMapGetFirst(AugMap map);
+AugMap augMapGetNext(AugMap map);
+
 void augMapDestroy(AugMap map);
 AugMapResult augMapRemove(AugMap map, int key);
 Map augMapConvertToMap(AugMap map);
@@ -42,8 +45,6 @@ Map augMapConvertToMap(AugMap map);
  * Macros for iterating over a map's values.
  * Declares a new iterator for the loop.
  */
-#define AUG_MAP_FOREACH_MAP(iterator, map)                        \
-    for (AugMap iterator = (AugMap)mapGetFirstMap(map); iterator; \
-         iterator = mapGetNextMap(map))
-
-#endif
+#define AUG_MAP_FOREACH(iterator, map)                         \
+    for (int iterator = (AugMap)augMapGetFirst(map); iterator; \
+         iterator = augMapGetNext(map))
