@@ -15,7 +15,9 @@
 			"unordered_map": "c",
 			"vector": "c",
 			"initializer_list": "c",
-			"sstream": "c"
+			"sstream": "c",
+			"functional": "c",
+			"election.h": "c"
 		}
 	}
 }
