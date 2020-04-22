@@ -1,7 +1,7 @@
 #ifndef VOID_MAP_H_
 #define VOID_MAP_H_
 #include <stdbool.h>
-
+#include "../mtm_map/map.h"
 typedef enum { INT_TYPE, STR_TYPE, MAP_TYPE, UNKNOWN } AugMapType;
 
 typedef enum {
@@ -35,8 +35,8 @@ AugMapType augMapGetType(AugMap map);
 #endif
 
 // Handle foreach iterations
-AugMap augMapGetFirst(AugMap map);
-AugMap augMapGetNext(AugMap map);
+int augMapGetFirst(AugMap map);
+int augMapGetNext(AugMap map);
 
 void augMapDestroy(AugMap map);
 AugMapResult augMapRemove(AugMap map, int key);
@@ -47,5 +47,5 @@ Map augMapConvertToMap(AugMap map);
  * Declares a new iterator for the loop.
  */
 #define AUG_MAP_FOREACH(iterator, map)                         \
-    for (int iterator = (AugMap)augMapGetFirst(map); iterator; \
+    for (int iterator = augMapGetFirst(map); iterator; \
          iterator = augMapGetNext(map))

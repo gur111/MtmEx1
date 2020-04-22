@@ -18,7 +18,7 @@ add_executable(Q1Tester Dry/q1Tester.c Dry/q1.c)
 add_executable(MapTester mtm_map/tests/map_tests.c mtm_map/map.c)
 
 #link_directories(.)
-add_executable(ElectionTester election/election.c mtm_map/map.c)
+add_executable(ElectionTester election/election.c mtm_map/map.c election/augmented_map.c)
 #target_link_libraries(ElectionTester libmap.a)
 
 add_executable(Q2Tester Dry/q2.c)

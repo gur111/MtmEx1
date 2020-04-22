@@ -1,7 +1,8 @@
 #include "augmented_map.h"
 
 #include <assert.h>
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "../mtm_map/map.h"
 
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
@@ -304,17 +305,11 @@ AugMapResult augMapRemove(AugMap map, int key) {
     return status;
 }
 
-AugMap augMapGetFirst(AugMap map) {
-    if (map == NULL) {
-        return NULL;
-    }
+int augMapGetFirst(AugMap map) {
     return strToInt(mapGetFirst(map->map));
 }
 
-AugMap augMapGetNext(AugMap map) {
-    if (map == NULL) {
-        return NULL;
-    }
+int augMapGetNext(AugMap map) {
     return strToInt(mapGetNext(map->map));
 }
 
