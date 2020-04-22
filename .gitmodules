@@ -1,0 +1,3 @@
+[submodule "MtmEx1Tester"]
+	path = MtmEx1Tester
+	url = git@github.com:gur111/MtmEx1Tester.git
