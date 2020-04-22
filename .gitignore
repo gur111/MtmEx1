@@ -5,6 +5,7 @@
 
 build/
 *.o
+*.so
 *.cmake
 cmake-build-debug/
 *.out
