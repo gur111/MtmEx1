@@ -45,7 +45,9 @@ static bool isLowerCase(const char *string) {
     return true;
 }
 
-ElectionResult augMapResultToElectionResult(AugMapResult result) {
+typedef  ElectionResult (*ConvertFunc)(AugMapResult);
+
+static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
     assert(result != AUG_MAP_ERROR);
     assert(result != AUG_MAP_TOO_MANY_LAYERS);
     assert(result != AUG_MAP_INVALID_TYPE);
@@ -58,10 +60,30 @@ ElectionResult augMapResultToElectionResult(AugMapResult result) {
         case AUG_MAP_NULL_ARGUMENT:
             return ELECTION_NULL_ARGUMENT;
         case AUG_MAP_ITEM_ALREADY_EXISTS:
-            // TODO:
             return ELECTION_TRIBE_ALREADY_EXIST;
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
-            // TODO:
+            return ELECTION_TRIBE_NOT_EXIST;
+        default:
+            assert(false);
+            return ELECTION_SUCCESS;
+    }
+}
+
+static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
+    assert(result != AUG_MAP_ERROR);
+    assert(result != AUG_MAP_TOO_MANY_LAYERS);
+    assert(result != AUG_MAP_INVALID_TYPE);
+
+    switch (result) {
+        case AUG_MAP_SUCCESS:
+            return ELECTION_SUCCESS;
+        case AUG_MAP_OUT_OF_MEMORY:
+            return ELECTION_OUT_OF_MEMORY;
+        case AUG_MAP_NULL_ARGUMENT:
+            return ELECTION_NULL_ARGUMENT;
+        case AUG_MAP_ITEM_ALREADY_EXISTS:
+            return ELECTION_AREA_ALREADY_EXIST;
+        case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return ELECTION_TRIBE_NOT_EXIST;
         default:
             assert(false);
@@ -71,7 +93,7 @@ ElectionResult augMapResultToElectionResult(AugMapResult result) {
 
 static ElectionResult electionSetNameLocal(AugMap aug_map, int element_id,
                                            const char *name, bool should_exist,
-                                           bool is_tribe) {
+                                           ConvertFunc augMapResultToElectionResult) {
     // Verify arguments
     assert(aug_map != NULL);
     assert(augMapGetType(aug_map) == STR_TYPE);
@@ -89,13 +111,8 @@ static ElectionResult electionSetNameLocal(AugMap aug_map, int element_id,
     }
 
     if (is_present != should_exist) {
-        if (is_tribe == true) {
-            return should_exist ? ELECTION_TRIBE_NOT_EXIST
-                                : ELECTION_TRIBE_ALREADY_EXIST;
-        } else {
-            return should_exist ? ELECTION_AREA_NOT_EXIST
-                                : ELECTION_AREA_ALREADY_EXIST;
-        }
+        return should_exist ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
+                            : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
     }
 
     if (isLowerCase(name) == false) {
@@ -112,37 +129,35 @@ ElectionResult electionAddTribe(Election election, int tribe_id,
         return ELECTION_NULL_ARGUMENT;
     }
 
-    return electionSetNameLocal(election->tribes, tribe_id, tribe_name, false,
-                                true);
+    return electionSetNameLocal(election->tribes, tribe_id, tribe_name,
+                                false, augMapResultToElectionResultTribe);
 }
 
-ElectionResult electionAddArea(Election election, int area_id,
-                               const char *area_name) {
+ElectionResult electionAddArea(Election election, int area_id, const char *area_name) {
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
 
     ElectionResult result =
-        electionSetNameLocal(election->areas, area_id, area_name, false, false);
+            electionSetNameLocal(election->areas, area_id, area_name,
+                                 false, augMapResultToElectionResultArea);
     if (result != ELECTION_SUCCESS) {
         return result;
     }
     AugMap votes_tribe_map = augMapCreate(INT_TYPE);
     if (votes_tribe_map == NULL) {
         AugMapResult res = augMapRemove(election->areas, area_id);
-        // TODO: augMapRemove can return aug_map_out_of_memory
         assert(res == AUG_MAP_SUCCESS);
-        return ELECTION_OUT_OF_MEMORY;
+        return augMapResultToElectionResultArea(res);
     }
     AugMapResult status =
-        augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
+            augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
     assert(status != AUG_MAP_NULL_ARGUMENT);
-    if (status == ELECTION_OUT_OF_MEMORY) {
+    if (status == AUG_MAP_OUT_OF_MEMORY) {
         augMapDestroy(votes_tribe_map);
         AugMapResult res = augMapRemove(election->areas, area_id);
-        // TODO: augMapRemove can return aug_map_out_of_memory
         assert(res == AUG_MAP_SUCCESS);
-        return augMapResultToElectionResult(status);
+        return augMapResultToElectionResultArea(status);
     }
     return ELECTION_SUCCESS;
 }
@@ -182,7 +197,8 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id) {
         return ELECTION_TRIBE_NOT_EXIST;
     }
 
-    AUG_MAP_FOREACH_MAP(tribe_key, election->votes_by_area) {
+    AUG_MAP_FOREACH_MAP(tribe_key, election->votes_by_area)
+    {
         augMapRemove(election->votes_by_area, tribe_id);
     }
     // todo:check if need to return ELECTION_OUT_OF_MEMORY
@@ -194,7 +210,8 @@ ElectionResult electionRemoveAreas(Election election,
     if (election == NULL || should_delete_area == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
-    AUG_MAP_FOREACH_MAP(key, election->areas) {
+    AUG_MAP_FOREACH_MAP(key, election->areas)
+    {
         if (should_delete_area(key)) {
             AugMapResult status = augMapRemove(election->areas, key);
             if (status == AUG_MAP_OUT_OF_MEMORY) {
@@ -274,17 +291,19 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
 
 Map electionComputeAreasToTribesMapping(Election election) {
     AugMap map = augMapCreate(INT_TYPE);
-    AUG_MAP_FOREACH_MAP(area, election->votes_by_area) {
+    AUG_MAP_FOREACH_MAP(area, election->votes_by_area)
+    {
         bool is_map_empty = true;
         int wining_votes = 0;
         int wining_tribe_id;
         AugMap tribe_votes_map;
         AugMapResult status =
-            augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
+                augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
-        AUG_MAP_FOREACH_MAP(tribe, tribe_votes_map) {
+        AUG_MAP_FOREACH_MAP(tribe, tribe_votes_map)
+        {
             int t_votes;
             status = augMapGetInt(tribe_votes_map, area, &t_votes);
             if (status != AUG_MAP_SUCCESS) {

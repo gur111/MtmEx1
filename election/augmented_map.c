@@ -245,7 +245,7 @@ AugMapResult augMapPutMap(AugMap map, int key, AugMap data) {
     return status;
 }
 
-AugMapResult augMapPutStr(AugMap map, int key, char *data) {
+AugMapResult augMapPutStr(AugMap map, int key, const char *data) {
     return augMapPut(map, STR_TYPE, key, data);
 }
 

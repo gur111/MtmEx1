@@ -25,7 +25,7 @@ AugMapResult augMapGetStr(AugMap map, int key, char **result);
 AugMapResult augMapGetInt(AugMap map, int key, int *result);
 
 AugMapResult augMapPutMap(AugMap map, int key, AugMap data);
-AugMapResult augMapPutStr(AugMap map, int key, char *data);
+AugMapResult augMapPutStr(AugMap map, int key, const char *data);
 AugMapResult augMapPutInt(AugMap map, int key, int value);
 
 AugMapResult augMapRemove(AugMap map, int key);
