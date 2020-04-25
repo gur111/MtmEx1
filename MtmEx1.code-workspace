@@ -17,7 +17,8 @@
 			"initializer_list": "c",
 			"sstream": "c",
 			"functional": "c",
-			"election.h": "c"
+			"election.h": "c",
+			"algorithm": "c"
 		}
 	}
 }
