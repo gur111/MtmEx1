@@ -18,7 +18,8 @@
 			"sstream": "c",
 			"functional": "c",
 			"election.h": "c",
-			"algorithm": "c"
+			"algorithm": "c",
+			"type_traits": "c"
 		}
 	}
 }
