@@ -19,4 +19,14 @@ language: c
 #   - eval "${MATRIX_EVAL}"
   
 
-script: sh ./trigger_tests.sh
+
+jobs:
+  include:
+    - stage: Configure
+      script: cmake --no-warn-unused-cli -H. -B./build -G "Unix Makefiles"
+    - stage: Build
+      script: cmake --build build --config Debug --target all
+    - stage: Test Election
+      script: ./build/ElectionTester
+
+# script: sh ./trigger_tests.sh
