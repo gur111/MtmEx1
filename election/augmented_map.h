@@ -166,3 +166,5 @@ Map augMapConvertToMap(AugMap map);
 #define AUG_MAP_FOREACH(iterator, map)                 \
     for (int iterator = augMapGetFirst(map); iterator; \
          iterator = augMapGetNext(map))
+
+#endif
