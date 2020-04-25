@@ -19,4 +19,4 @@ language: c
 #   - eval "${MATRIX_EVAL}"
   
 
-script: ./trigger_tests.sh
+script: sh ./trigger_tests.sh
