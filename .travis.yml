@@ -30,3 +30,4 @@ jobs:
       script: ./build/ElectionTester
 
 # script: sh ./trigger_tests.sh
+script: cmake --no-warn-unused-cli -H. -B./build -G "Unix Makefiles" && cmake --build build --config Debug --target all && ./build/ElectionTester
