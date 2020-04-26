@@ -1,9 +1,9 @@
 #include "augmented_map.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "../mtm_map/map.h"
 
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
@@ -19,7 +19,6 @@ struct AugMap_t {
 static void intToStr(int num, char *result) {
     assert(result != NULL);
     sprintf(result, "%d", num);
-    return result;
 }
 
 static int strToInt(char *str) {
@@ -133,7 +132,7 @@ AugMapResult augMapGetMap(AugMap map, int key, AugMap *result) {
 
     assert(str_value != NULL);
 
-    *result = (AugMap) strToPtr(str_value);
+    *result = (AugMap)strToPtr(str_value);
     return AUG_MAP_SUCCESS;
 }
 
@@ -208,9 +207,12 @@ AugMapResult mapResultToAugMapResult(MapResult result) {
 }
 
 static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
-                              char *str_value) {
+                              const char *str_value) {
     if (map == NULL || str_value == NULL) {
         return AUG_MAP_NULL_ARGUMENT;
+    }
+    if (key < 0) {
+        return AUG_MAP_INVALID_KEY;
     }
 
     assert(map->map);
@@ -264,11 +266,8 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
     }
     *result = false;
 
-    char str_key[MAX_STR_KEY_SIZE];
-    intToStr(key, str_key);
-
     char *value_str;
-    AugMapResult status = augMapGet(map, UNKNOWN, str_key, &value_str);
+    AugMapResult status = augMapGet(map, UNKNOWN, key, &value_str);
     // Should never happen when passing UNKNOWN
     assert(status != AUG_MAP_INVALID_TYPE);
 
@@ -307,11 +306,19 @@ AugMapResult augMapRemove(AugMap map, int key) {
 }
 
 int augMapGetFirst(AugMap map) {
-    return strToInt(mapGetFirst(map->map));
+    char *first = mapGetFirst(map->map);
+    if (first == NULL) {
+        return -1;
+    }
+    return strToInt(first);
 }
 
 int augMapGetNext(AugMap map) {
-    return strToInt(mapGetNext(map->map));
+    char *next = mapGetNext(map->map);
+    if (next == NULL) {
+        return -1;
+    }
+    return strToInt(next);
 }
 
 /**
