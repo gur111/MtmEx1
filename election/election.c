@@ -21,6 +21,7 @@ Election electionCreate() {
     if (election->tribes == NULL || election->votes_by_area == NULL ||
         election->areas == NULL) {
         free(election);
+        // TODO: Free whatever didn't fail
         return NULL;
     }
     return election;
