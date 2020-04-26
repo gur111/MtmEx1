@@ -16,6 +16,7 @@ typedef enum {
     AUG_MAP_SUCCESS,
     AUG_MAP_OUT_OF_MEMORY,
     AUG_MAP_INVALID_TYPE,
+    AUG_MAP_INVALID_KEY,
     AUG_MAP_NULL_ARGUMENT,
     AUG_MAP_ITEM_ALREADY_EXISTS,
     AUG_MAP_ITEM_DOES_NOT_EXIST,
@@ -164,7 +165,7 @@ Map augMapConvertToMap(AugMap map);
  * Declares a new iterator for the loop.
  */
 #define AUG_MAP_FOREACH(iterator, map)                 \
-    for (int iterator = augMapGetFirst(map); iterator; \
+    for (int iterator = augMapGetFirst(map); iterator != -1; \
          iterator = augMapGetNext(map))
 
 #endif
