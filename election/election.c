@@ -1,7 +1,9 @@
 #include "election.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "augmented_map.h"
 
 struct election_t {
@@ -90,9 +92,9 @@ static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
     }
 }
 
-static ElectionResult electionSetNameLocal(AugMap aug_map, int element_id,
-                                           const char *name, bool should_exist,
-                                           ConvertFunc augMapResultToElectionResult) {
+static ElectionResult electionSetNameLocal(
+    AugMap aug_map, int element_id, const char *name, bool should_exist,
+    ConvertFunc augMapResultToElectionResult) {
     // Verify arguments
     assert(aug_map != NULL);
     assert(augMapGetType(aug_map) == STR_TYPE);
@@ -110,8 +112,9 @@ static ElectionResult electionSetNameLocal(AugMap aug_map, int element_id,
     }
 
     if (is_present != should_exist) {
-        return should_exist ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
-                            : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
+        return should_exist
+                   ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
+                   : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
     }
 
     if (isLowerCase(name) == false) {
@@ -128,18 +131,19 @@ ElectionResult electionAddTribe(Election election, int tribe_id,
         return ELECTION_NULL_ARGUMENT;
     }
 
-    return electionSetNameLocal(election->tribes, tribe_id, tribe_name,
-                                false, augMapResultToElectionResultTribe);
+    return electionSetNameLocal(election->tribes, tribe_id, tribe_name, false,
+                                augMapResultToElectionResultTribe);
 }
 
-ElectionResult electionAddArea(Election election, int area_id, const char *area_name) {
+ElectionResult electionAddArea(Election election, int area_id,
+                               const char *area_name) {
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
 
     ElectionResult result =
-            electionSetNameLocal(election->areas, area_id, area_name,
-                                 false, augMapResultToElectionResultArea);
+        electionSetNameLocal(election->areas, area_id, area_name, false,
+                             augMapResultToElectionResultArea);
     if (result != ELECTION_SUCCESS) {
         return result;
     }
@@ -150,7 +154,7 @@ ElectionResult electionAddArea(Election election, int area_id, const char *area_
         return ELECTION_OUT_OF_MEMORY;
     }
     AugMapResult status =
-            augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
+        augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
     assert(status != AUG_MAP_NULL_ARGUMENT);
     if (status == AUG_MAP_OUT_OF_MEMORY) {
         augMapDestroy(votes_tribe_map);
@@ -288,7 +292,7 @@ Map electionComputeAreasToTribesMapping(Election election) {
         int wining_tribe_id;
         AugMap tribe_votes_map;
         AugMapResult status =
-                augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
+            augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
