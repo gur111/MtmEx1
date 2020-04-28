@@ -201,7 +201,7 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id) {
     AUG_MAP_FOREACH(area_key, election->votes_by_area) {
         AugMap area_map;
         status = augMapGetMap(election->votes_by_area, area_key, &area_map);
-        if(status != AUG_MAP_SUCCESS){
+        if (status != AUG_MAP_SUCCESS) {
             return augMapResultToElectionResultTribe(status);
         }
         status = augMapRemove(area_map, tribe_id);
@@ -256,7 +256,11 @@ static ElectionResult electionManageVotes(Election election, int area_id,
     status = augMapGetInt(temp_map, tribe_id, &votes);
     assert(status != AUG_MAP_OUT_OF_MEMORY);
     if (status != AUG_MAP_SUCCESS) {
-        return augMapResultToElectionResultTribe(status);
+        if (status == AUG_MAP_ITEM_DOES_NOT_EXIST) {
+            votes = 0;
+        } else {
+            return augMapResultToElectionResultTribe(status);
+        }
     }
     if (add_votes == true) {
         status = augMapPutInt(temp_map, tribe_id, votes + num_of_votes);

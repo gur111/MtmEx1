@@ -255,7 +255,7 @@ AugMapResult augMapPutStr(AugMap map, int key, const char *data) {
 
 AugMapResult augMapPutInt(AugMap map, int key, int value) {
     char str_value[MAX_STR_KEY_SIZE];
-    intToStr(key, str_value);
+    intToStr(value, str_value);
 
     return augMapPut(map, INT_TYPE, key, str_value);
 }
