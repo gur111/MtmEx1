@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef NDEBUG
+#include "../MtmEx1Tester/utils.h"
+// Allow malloc to be unstable
+#define malloc xmalloc
+#endif
+
 #include "augmented_map.h"
 
 struct election_t {
