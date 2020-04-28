@@ -276,9 +276,9 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
             *result = true;
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return AUG_MAP_SUCCESS;
-        case AUG_MAP_OUT_OF_MEMORY:
         case AUG_MAP_NULL_ARGUMENT:
         default:
+            assert(status != AUG_MAP_OUT_OF_MEMORY);
             return status;
     }
 }
