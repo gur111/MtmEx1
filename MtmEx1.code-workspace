@@ -3,5 +3,30 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"test_utilities.h": "c",
+			"augmented_map.h": "c",
+			"map.h": "c",
+			"array": "c",
+			"deque": "c",
+			"string": "c",
+			"unordered_map": "c",
+			"vector": "c",
+			"initializer_list": "c",
+			"sstream": "c",
+			"functional": "c",
+			"election.h": "c",
+			"algorithm": "c",
+			"type_traits": "c",
+			"stdbool.h": "c",
+			"stdio.h": "c",
+			"stdlib.h": "c",
+			"unistd.h": "c",
+			"types.h": "c",
+			"utils.h": "c",
+			"string.h": "c"
+		}
+	}
 }

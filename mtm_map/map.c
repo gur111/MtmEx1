@@ -92,11 +92,7 @@ Map mapCreate() {
 }
 
 void mapDestroy(Map map) {
-    if (map == NULL) {
-        return;
-    }
-
-    listFree(map->head);
+    mapClear(map);
     free(map);
 }
 

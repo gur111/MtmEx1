@@ -1,22 +1,15 @@
 language: c
 
-install: make cmake gcc
 compiler: gcc
 
-matrix:
-  - os: linux
-  addons:
-    apt:
-      sources:
-        - ubuntu-toolchain-r-test
-      packages:
-        - g++-7
-
-  env:
-    - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-
-before_install:
-  - eval "${MATRIX_EVAL}"
   
+install:
+  - git submodule update --remote
+  - echo "Configure..."
+  - cmake --no-warn-unused-cli -H. -B./build -G "Unix Makefiles"
+  - echo "Build...."
+  - cmake --build build --config Debug --target all
 
-script: cmake --build build --config Debug --target all && ./build/ElectionTester
+script: 
+  - ./build/ElectionTester
+  - ./build/MapTester
