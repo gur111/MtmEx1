@@ -313,13 +313,13 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
 }
 
 Map electionComputeAreasToTribesMapping(Election election) {
-    AugMap map = augMapCreate(INT_TYPE);
-    if (map == NULL || election == NULL) {
+    AugMap results = augMapCreate(INT_TYPE);
+    if (results == NULL || election == NULL) {
         return NULL;
     }
     AUG_MAP_FOREACH(area, election->votes_by_area) {
         bool is_map_empty = true;
-        int wining_votes = 0;
+        int max_votes = 0;
         int wining_tribe_id = 0;
         AugMap tribe_votes_map;
         AugMapResult status =
@@ -327,7 +327,7 @@ Map electionComputeAreasToTribesMapping(Election election) {
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
-        AUG_MAP_FOREACH(tribe, tribe_votes_map) {
+        AUG_MAP_FOREACH(current_tribe_vote, tribe_votes_map) {
             int t_votes;
             status = augMapGetInt(tribe_votes_map, area, &t_votes);
             if (status != AUG_MAP_SUCCESS) {
@@ -335,21 +335,21 @@ Map electionComputeAreasToTribesMapping(Election election) {
             }
             if (is_map_empty) {
                 is_map_empty = false;
-                wining_votes = t_votes;
-                wining_tribe_id = tribe;
+                max_votes = t_votes;
+                wining_tribe_id = current_tribe_vote;
             }
-            if (wining_tribe_id > tribe && wining_votes == t_votes) {
-                wining_tribe_id = tribe;
+            if (wining_tribe_id > current_tribe_vote && max_votes == t_votes) {
+                wining_tribe_id = current_tribe_vote;
             }
             if (t_votes > wining_tribe_id) {
-                wining_tribe_id = tribe;
-                wining_votes = t_votes;
+                wining_tribe_id = current_tribe_vote;
+                max_votes = t_votes;
             }
         }
-        status = augMapPutInt(map, area, wining_tribe_id);
+        status = augMapPutInt(results, area, wining_tribe_id);
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
     }
-    return augMapConvertToMap(map);
+    return augMapConvertToMap(results);
 }
