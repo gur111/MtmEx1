@@ -180,6 +180,7 @@ char *electionGetTribeName(Election election, int tribe_id) {
     char *result;
     AugMapResult status = augMapGetStr(election->tribes, tribe_id, &result);
     assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
+    assert(status !=AUG_MAP_NULL_ARGUMENT && status != AUG_MAP_INVALID_KEY);
     if (status != AUG_MAP_SUCCESS) {
         //if there were any problems in the input or in the function need to return null
         return NULL;
