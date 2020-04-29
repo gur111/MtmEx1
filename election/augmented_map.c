@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef NDEBUG
+#include "../MtmEx1Tester/utils.h"
+// Allow malloc to be unstable
+#define malloc xmalloc
+#endif
+
 #include "../mtm_map/map.h"
 
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
