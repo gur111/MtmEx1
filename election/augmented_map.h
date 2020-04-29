@@ -160,6 +160,13 @@ void augMapDestroy(AugMap map);
  */
 Map augMapConvertToMap(AugMap map);
 
+
+/**
+ *
+ * @param map The AugMap whitch we want to check the size
+ * @return an int - the size of the AugMap->map.
+ */
+int augMapGetSize(AugMap map);
 /*!
  * Macros for iterating over the map's values.
  * Declares a new iterator for the loop.

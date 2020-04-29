@@ -216,14 +216,33 @@ ElectionResult electionRemoveAreas(Election election,
     if (election == NULL || should_delete_area == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
+    int size = augMapGetSize(election->areas);
+    int *candidate_array = (int *) malloc(sizeof(int) * size);
+    if(candidate_array == NULL){
+        return ELECTION_NULL_ARGUMENT;
+    }
+    for (int i = 0; i < size; i++) {
+        candidate_array[i] = -1;
+    }
+
+    int j = 0;
     AUG_MAP_FOREACH(key, election->areas) {
         if (should_delete_area(key)) {
-            AugMapResult status = augMapRemove(election->areas, key);
-            assert(status == AUG_MAP_SUCCESS);
-            status = augMapRemove(election->votes_by_area, key);
-            assert(status == AUG_MAP_SUCCESS);
+            candidate_array[j] = key;
+            j++;
         }
     }
+    for (int i = 0; i < size; i++) {
+        if (candidate_array[i] == -1){
+            free(candidate_array);
+            return ELECTION_SUCCESS;
+        }
+        AugMapResult status = augMapRemove(election->areas, candidate_array[i]);
+        assert(status == AUG_MAP_SUCCESS);
+        status = augMapRemove(election->votes_by_area, candidate_array[i]);
+        assert(status == AUG_MAP_SUCCESS);
+    }
+    free(candidate_array);
     return ELECTION_SUCCESS;
 }
 

@@ -358,3 +358,8 @@ Map augMapConvertToMap(AugMap augMap) {
     free(augMap);
     return map;
 }
+
+int augMapGetSize(AugMap augMap){
+    int size = mapGetSize(augMap->map);
+    return size;
+}
