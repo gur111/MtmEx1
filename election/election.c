@@ -179,6 +179,7 @@ char *electionGetTribeName(Election election, int tribe_id) {
     }
     char *result;
     AugMapResult status = augMapGetStr(election->tribes, tribe_id, &result);
+    assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     if (status != AUG_MAP_SUCCESS) {
         //if there were any problems in the input or in the function need to return null
         return NULL;
@@ -246,9 +247,9 @@ ElectionResult electionRemoveAreas(Election election,
 }
 
 static inline int max(int first, int second) {
-    if (first>=second){
+    if (first >= second) {
         return first;
-    } else{
+    } else {
         return second;
     }
 }
@@ -316,23 +317,23 @@ Map electionComputeAreasToTribesMapping(Election election) {
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
-        AUG_MAP_FOREACH(current_tribe_vote, tribe_votes_map) {
-            int t_votes;
-            status = augMapGetInt(tribe_votes_map, area, &t_votes);
+        AUG_MAP_FOREACH(area_key, tribe_votes_map) {
+            int current_tribe_vote;
+            status = augMapGetInt(tribe_votes_map, area, &current_tribe_vote);
             if (status != AUG_MAP_SUCCESS) {
                 return NULL;
             }
             if (is_map_empty) {
                 is_map_empty = false;
-                max_votes = t_votes;
+                max_votes = current_tribe_vote;
                 wining_tribe_id = current_tribe_vote;
             }
-            if (wining_tribe_id > current_tribe_vote && max_votes == t_votes) {
+            if (wining_tribe_id > current_tribe_vote && max_votes == current_tribe_vote) {
                 wining_tribe_id = current_tribe_vote;
             }
-            if (t_votes > wining_tribe_id) {
+            if (current_tribe_vote > wining_tribe_id) {
                 wining_tribe_id = current_tribe_vote;
-                max_votes = t_votes;
+                max_votes = current_tribe_vote;
             }
         }
         status = augMapPutInt(results, area, wining_tribe_id);
