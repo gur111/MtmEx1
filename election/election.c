@@ -30,10 +30,12 @@ Election electionCreate() {
 }
 
 void electionDestroy(Election election) {
-    augMapDestroy(election->votes_by_area);
-    augMapDestroy(election->areas);
-    augMapDestroy(election->tribes);
-    free(election);
+    if(election != NULL){
+        augMapDestroy(election->votes_by_area);
+        augMapDestroy(election->areas);
+        augMapDestroy(election->tribes);
+        free(election);
+    }
 }
 
 static bool isLowerCase(const char *string) {
@@ -218,7 +220,7 @@ ElectionResult electionRemoveAreas(Election election,
     }
     int size = augMapGetSize(election->areas);
     int *candidate_array = (int *) malloc(sizeof(int) * size);
-    if(candidate_array == NULL){
+    if (candidate_array == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
     for (int i = 0; i < size; i++) {
@@ -233,7 +235,7 @@ ElectionResult electionRemoveAreas(Election election,
         }
     }
     for (int i = 0; i < size; i++) {
-        if (candidate_array[i] == -1){
+        if (candidate_array[i] == -1) {
             free(candidate_array);
             return ELECTION_SUCCESS;
         }
@@ -318,7 +320,7 @@ Map electionComputeAreasToTribesMapping(Election election) {
     AUG_MAP_FOREACH(area, election->votes_by_area) {
         bool is_map_empty = true;
         int wining_votes = 0;
-        int wining_tribe_id;
+        int wining_tribe_id = 0;
         AugMap tribe_votes_map;
         AugMapResult status =
                 augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
