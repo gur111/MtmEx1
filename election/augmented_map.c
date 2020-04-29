@@ -276,9 +276,9 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
             *result = true;
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return AUG_MAP_SUCCESS;
-        case AUG_MAP_OUT_OF_MEMORY:
         case AUG_MAP_NULL_ARGUMENT:
         default:
+            assert(status != AUG_MAP_OUT_OF_MEMORY);
             return status;
     }
 }
@@ -286,7 +286,10 @@ AugMapResult augMapContains(AugMap map, int key, bool *result) {
 AugMapResult augMapRemove(AugMap map, int key) {
     if (map == NULL) {
         return AUG_MAP_NULL_ARGUMENT;
+    } else if (key < 0) {
+        return AUG_MAP_INVALID_KEY;
     }
+
     char str_key[MAX_STR_KEY_SIZE];
     intToStr(key, str_key);
 
