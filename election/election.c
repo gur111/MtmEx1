@@ -227,7 +227,7 @@ ElectionResult electionRemoveAreas(Election election,
         return ELECTION_NULL_ARGUMENT;
     }
 
-    for (bool was_deleted = false; was_deleted;) {
+    for (bool was_deleted = true; was_deleted;) {
         was_deleted = false;
 
         AUG_MAP_FOREACH(key, election->areas) {
