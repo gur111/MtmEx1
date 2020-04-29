@@ -24,7 +24,9 @@
 			"stdio.h": "c",
 			"stdlib.h": "c",
 			"unistd.h": "c",
-			"types.h": "c"
+			"types.h": "c",
+			"utils.h": "c",
+			"string.h": "c"
 		}
 	}
 }
