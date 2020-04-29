@@ -119,7 +119,7 @@ static ElectionResult electionSetNameLocal(
                : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
     }
 
-    if (isLowerCase(name) == false) {
+    if (!isLowerCase(name)) {
         return ELECTION_INVALID_NAME;
     }
     AugMapResult res = augMapPutStr(aug_map, element_id, name);
