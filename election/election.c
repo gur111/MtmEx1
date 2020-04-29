@@ -85,7 +85,7 @@ static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
         case AUG_MAP_ITEM_ALREADY_EXISTS:
             return ELECTION_AREA_ALREADY_EXIST;
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
-            return ELECTION_TRIBE_NOT_EXIST;
+            return ELECTION_AREA_NOT_EXIST;
         default:
             assert(false);
             return ELECTION_SUCCESS;
@@ -262,13 +262,13 @@ static ElectionResult electionManageVotes(Election election, int area_id,
     AugMapResult status = augMapContains(election->tribes, tribe_id, &res);
     assert(status != AUG_MAP_OUT_OF_MEMORY);
     if (res == false) {
-        return augMapResultToElectionResultTribe(status);
+        return ELECTION_TRIBE_NOT_EXIST;
     }
     AugMap temp_map;
     status = augMapGetMap(election->votes_by_area, area_id, &temp_map);
     assert(status != AUG_MAP_OUT_OF_MEMORY);
     if (status != AUG_MAP_SUCCESS) {
-        return augMapResultToElectionResultTribe(status);
+        return augMapResultToElectionResultArea(status);
     }
     assert(temp_map != NULL);
     int votes = 0;
