@@ -372,3 +372,4 @@ int augMapGetSize(AugMap augMap){
     int size = mapGetSize(augMap->map);
     return size;
 }
+
