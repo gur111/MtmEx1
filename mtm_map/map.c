@@ -38,6 +38,7 @@ static inline void nodeFree(Node node) {
     free(node->data.value);
     free(node);
 }
+
 /**
  * listFree: frees all of the nodes in the list until a Null point (end of the list)
  * @param node - a pointer to the head of the linked list
@@ -56,6 +57,7 @@ static void listFree(Node node) {
         nodeFree(prev);
     }
 }
+
 /**
  * nodeCreate - creates a single Node, to witch the input strings will be copied by value.
  * @param key - a string that will be inserted to the Node as a key, not Null
@@ -120,7 +122,7 @@ Map mapCopy(Map map) {
     }
 
     MapResult status;
-
+    //going through all of the keys in the input map and inserting them to the new map
     MAP_FOREACH(item, map) {
         status = mapPut(new_map, map->itter->data.key, map->itter->data.value);
         if (status != MAP_SUCCESS) {
@@ -170,7 +172,8 @@ MapResult mapPut(Map map, const char *key, const char *value) {
         map->head = node;
         map->size++;
     } else {
-        // If we found an existing node, we resize the memory for value
+        // If we found an existing node,
+        // we resize the memory for value and changing the old value to the input value
         char *new_value_memory = realloc(node->data.value, strlen(value) + 1);
 
         if (new_value_memory == NULL) {
@@ -189,26 +192,25 @@ MapResult mapPut(Map map, const char *key, const char *value) {
 static Node mapGetNode(Map map, const char *key) {
     if (map == NULL || key == NULL) {
         return NULL;
-    } else {
-        Node curr;
-        curr = map->head;
-        while (curr != NULL) {
-            if (strcmp(curr->data.key, key) == 0) {
-                return curr;
-            }
-            curr = curr->next;
-        }
-        return NULL;
     }
+    Node curr;
+    curr = map->head;
+    while (curr != NULL) {
+        if (strcmp(curr->data.key, key) == 0) {
+            return curr;
+        }
+        curr = curr->next;
+    }
+    return NULL;
 }
 
 char *mapGet(Map map, const char *key) {
+    //calling the function mapGetNode in order to get the Node that has the same key value as the input key
     Node key_node = mapGetNode(map, key);
     if (key_node == NULL) {
         return NULL;
-    } else {
-        return key_node->data.value;
     }
+    return key_node->data.value;
 }
 
 MapResult mapRemove(Map map, const char *key) {
@@ -219,12 +221,14 @@ MapResult mapRemove(Map map, const char *key) {
     Node prev = NULL;
     curr = map->head;
     MAP_FOREACH(item, map) {
+        //going through all the keys in the map, in order to find the node that saves the desired key-value
         if (strcmp(item, key) == 0) {
             if (prev == NULL) {
                 map->head = curr->next;
             } else {
                 prev->next = curr->next;
             }
+            //removing the node from the map
             map->size--;
             nodeFree(curr);
             return MAP_SUCCESS;
@@ -263,7 +267,7 @@ MapResult mapClear(Map map) {
     if (map == NULL) {
         return MAP_NULL_ARGUMENT;
     }
-
+    //removing all the nodes in the map
     listFree(map->head);
     map->size = 0;
     map->head = map->itter = NULL;
