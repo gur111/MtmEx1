@@ -23,7 +23,7 @@ Election electionCreate() {
     if (election == NULL) {
         return NULL;
     }
-    //creating sub
+    //creating sub maps
     election->votes_by_area = augMapCreate(MAP_TYPE);
     election->areas = augMapCreate(STR_TYPE);
     election->tribes = augMapCreate(STR_TYPE);
@@ -43,7 +43,13 @@ void electionDestroy(Election election) {
         free(election);
     }
 }
-
+/**
+ * isLowerCase - checks if the string consist of lower case characters and space key
+ * @param string  - the string that needs to be checked
+ * @return
+ *      true - in case the string consist of lower case characters and space key
+ *      false - if the string has invalid characters
+ */
 static bool isLowerCase(const char *string) {
     const unsigned int length = strlen(string);
     for (unsigned int i = 0; i < length; i++) {
@@ -55,12 +61,17 @@ static bool isLowerCase(const char *string) {
 }
 
 typedef ElectionResult (*ConvertFunc)(AugMapResult);
-
+/**
+ * augMapResultToElectionResultTribe - converts the eNUM from the augmented_map.h to ElectionResult -
+ * specific conversion to tribe Enums
+ * @param result - a eNum of AugMapResult - only eNums that exists in election.h are valid
+ * @return
+ *      eNuns ElectionResult
+ */
 static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
     assert(result != AUG_MAP_ERROR);
     assert(result != AUG_MAP_TOO_MANY_LAYERS);
     assert(result != AUG_MAP_INVALID_TYPE);
-
     switch (result) {
         case AUG_MAP_SUCCESS:
             return ELECTION_SUCCESS;
@@ -73,11 +84,18 @@ static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return ELECTION_TRIBE_NOT_EXIST;
         default:
+            //shouldn`t get to here
             assert(false);
             return ELECTION_SUCCESS;
     }
 }
-
+/**
+ * augMapResultToElectionResultArea - converts the eNUM from the
+ *                                  augmented_map.h to ElectionResult - specific conversion to area Enums
+ * @param result - a eNum of AugMapResult - only eNums that exists in election.h are valid
+ * @return
+ *      eNuns ElectionResult
+ */
 static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
     assert(result != AUG_MAP_ERROR);
     assert(result != AUG_MAP_TOO_MANY_LAYERS);
@@ -95,11 +113,26 @@ static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return ELECTION_AREA_NOT_EXIST;
         default:
+            //shouldn`t get to here
             assert(false);
             return ELECTION_SUCCESS;
     }
 }
-
+/**
+ * electionSetName - inserts or updates the name of tribe or area. validate the inputs of the input.
+ * @param aug_map - the tribe or the area map
+ * @param element_id - the tribe id or the area id - cant be negative
+ * @param name - the new name of the area or tribe
+ * @param should_exist - indicates if the user wants to change the name of the tribe or just enter a new tribe to the
+ *                      election
+ * @param augMapResultToElectionResult - the function that converts the eNum
+ * @return
+ *      ELECTION_NULL_ARGUMENT - in case there`s a null argument
+ *      ELECTION_INVALID_ID - if the id negative
+ *      ELECTION_TRIBE_DOSE_NOT_EXIST - in case the user wants to update the name of the tribe, but it dosen`t exist
+ *      ELECTION_INVALID_NAME - invalid char in the name string
+ *      ELECTION_SUCCESS - if the name was successfully inserted
+ */
 static ElectionResult electionSetName(
         AugMap aug_map, int element_id, const char *name, bool should_exist,
         ConvertFunc augMapResultToElectionResult) {
@@ -114,11 +147,12 @@ static ElectionResult electionSetName(
     }
 
     bool is_present;
+    //checks if the tribe/area id already exits in election
     AugMapResult status = augMapContains(aug_map, element_id, &is_present);
     if (status != AUG_MAP_SUCCESS) {
         return augMapResultToElectionResult(status);
     }
-
+    //checks if the user wants to update the tribe name but the tribe doesnt exists
     if (is_present != should_exist) {
         return should_exist
                ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
@@ -128,6 +162,7 @@ static ElectionResult electionSetName(
     if (!isLowerCase(name)) {
         return ELECTION_INVALID_NAME;
     }
+    //inserts the new name to and id to election / or just updates the value of the key
     AugMapResult res = augMapPutStr(aug_map, element_id, name);
     assert(res != AUG_MAP_INVALID_TYPE);
     return augMapResultToElectionResult(res);
@@ -138,7 +173,7 @@ ElectionResult electionAddTribe(Election election, int tribe_id,
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
-
+    //inserting the new tribe to election->tribe, using the electionSetName function
     return electionSetName(election->tribes, tribe_id, tribe_name, false,
                            augMapResultToElectionResultTribe);
 }
@@ -155,8 +190,10 @@ ElectionResult electionAddArea(Election election, int area_id,
     if (result != ELECTION_SUCCESS) {
         return result;
     }
+    //creating the map the that would store the votes to the tribes - in this  area.
     AugMap votes_tribe_map = augMapCreate(INT_TYPE);
     if (votes_tribe_map == NULL) {
+        //memory problem
         AugMapResult res = augMapRemove(election->areas, area_id);
         assert(res == AUG_MAP_SUCCESS);
         return ELECTION_OUT_OF_MEMORY;
@@ -179,6 +216,7 @@ char *electionGetTribeName(Election election, int tribe_id) {
         return NULL;
     }
     char *result;
+    //getting the value of the tribe id from election->tribes
     AugMapResult status = augMapGetStr(election->tribes, tribe_id, &result);
     assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     assert(status !=AUG_MAP_NULL_ARGUMENT && status != AUG_MAP_INVALID_KEY);
@@ -194,11 +232,13 @@ ElectionResult electionSetTribeName(Election election, int tribe_id,
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
+    // setting the new name of the tribe using electionSetName function
     return electionSetName(election->tribes, tribe_id, tribe_name, true,
                            augMapResultToElectionResultTribe);
 }
 
 ElectionResult electionRemoveTribe(Election election, int tribe_id) {
+    //validating the arguments
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
