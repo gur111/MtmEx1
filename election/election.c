@@ -23,6 +23,7 @@ Election electionCreate() {
     if (election == NULL) {
         return NULL;
     }
+    //creating sub
     election->votes_by_area = augMapCreate(MAP_TYPE);
     election->areas = augMapCreate(STR_TYPE);
     election->tribes = augMapCreate(STR_TYPE);

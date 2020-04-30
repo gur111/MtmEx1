@@ -38,7 +38,12 @@ static inline void nodeFree(Node node) {
     free(node->data.value);
     free(node);
 }
-
+/**
+ * listFree: frees all of the nodes in the list until a Null point (end of the list)
+ * @param node - a pointer to the head of the linked list
+ * @return
+ * void function, dose not return a value.
+ */
 static void listFree(Node node) {
     if (node == NULL) {
         return;
@@ -51,7 +56,14 @@ static void listFree(Node node) {
         nodeFree(prev);
     }
 }
-
+/**
+ * nodeCreate - creates a single Node, to witch the input strings will be copied by value.
+ * @param key - a string that will be inserted to the Node as a key, not Null
+ * @param value - a string that will be inserted to the Node as a value, not Null
+ * @return:
+ *      NULL if there`s a problem with memory allocation
+ *      else, the new node that was created
+ */
 static Node nodeCreate(const char *key, const char *value) {
     assert(key);
     assert(value);
@@ -107,7 +119,7 @@ Map mapCopy(Map map) {
         return NULL;
     }
 
-    MapResult status = MAP_SUCCESS;
+    MapResult status;
 
     MAP_FOREACH(item, map) {
         status = mapPut(new_map, map->itter->data.key, map->itter->data.value);
@@ -116,6 +128,7 @@ Map mapCopy(Map map) {
             fprintf(stderr, "mapPut returned status: (%d)\n", status);
 #endif
             mapDestroy(new_map);
+            return NULL;
         }
     }
 
