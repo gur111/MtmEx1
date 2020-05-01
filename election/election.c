@@ -43,6 +43,7 @@ void electionDestroy(Election election) {
         free(election);
     }
 }
+
 /**
  * isLowerCase - checks if the string consist of lower case characters and space key
  * @param string  - the string that needs to be checked
@@ -61,6 +62,7 @@ static bool isLowerCase(const char *string) {
 }
 
 typedef ElectionResult (*ConvertFunc)(AugMapResult);
+
 /**
  * augMapResultToElectionResultTribe - converts the eNUM from the augmented_map.h to ElectionResult -
  * specific conversion to tribe Enums
@@ -89,6 +91,7 @@ static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
             return ELECTION_SUCCESS;
     }
 }
+
 /**
  * augMapResultToElectionResultArea - converts the eNUM from the
  *                                  augmented_map.h to ElectionResult - specific conversion to area Enums
@@ -118,6 +121,7 @@ static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
             return ELECTION_SUCCESS;
     }
 }
+
 /**
  * electionSetName - inserts or updates the name of tribe or area. validate the inputs of the input.
  * @param aug_map - the tribe or the area map
@@ -219,7 +223,7 @@ char *electionGetTribeName(Election election, int tribe_id) {
     //getting the value of the tribe id from election->tribes
     AugMapResult status = augMapGetStr(election->tribes, tribe_id, &result);
     assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
-    assert(status !=AUG_MAP_NULL_ARGUMENT && status != AUG_MAP_INVALID_KEY);
+    assert(status != AUG_MAP_NULL_ARGUMENT && status != AUG_MAP_INVALID_KEY);
     if (status != AUG_MAP_SUCCESS) {
         //if there were any problems in the input or in the function need to return null
         return NULL;
@@ -295,6 +299,7 @@ static inline int max(int first, int second) {
         return second;
     }
 }
+
 /**
  * electionChangeVotes - adding or removing votes from the election system
  * @param election - the election system
@@ -380,6 +385,12 @@ Map electionComputeAreasToTribesMapping(Election election) {
         if (status != AUG_MAP_SUCCESS) {
             return NULL;
         }
+        //getting the min tribe id, if there`s no tribes in the system returns a null map
+        int min_tribe_id = augMapGetMinKey(election->tribes);
+        if (min_tribe_id == -1) {
+            return augMapConvertToMap(results);
+        }
+
         AUG_MAP_FOREACH(area_key, tribe_votes_map) {
             //going through the tribes in the area with votes
             int current_tribe_vote;
@@ -400,6 +411,10 @@ Map electionComputeAreasToTribesMapping(Election election) {
                 wining_tribe_id = current_tribe_vote;
                 max_votes = current_tribe_vote;
             }
+        }
+        //if no vote was added in the area
+        if (max_votes == 0) {
+            wining_tribe_id = min_tribe_id;
         }
         //inserting the most votes
         status = augMapPutInt(results, area, wining_tribe_id);

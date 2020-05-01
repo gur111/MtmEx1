@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #ifndef NDEBUG
+
 #include "../MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
 #define malloc xmalloc
@@ -138,7 +139,7 @@ AugMapResult augMapGetMap(AugMap map, int key, AugMap *result) {
 
     assert(str_value != NULL);
 
-    *result = (AugMap)strToPtr(str_value);
+    *result = (AugMap) strToPtr(str_value);
     return AUG_MAP_SUCCESS;
 }
 
@@ -231,7 +232,7 @@ static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
     intToStr(key, str_key);
 
     AugMapResult status =
-        mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
+            mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
 
     return status;
 }
@@ -368,7 +369,31 @@ Map augMapConvertToMap(AugMap augMap) {
     return map;
 }
 
-int augMapGetSize(AugMap augMap){
+int augMapGetSize(AugMap augMap) {
     return mapGetSize(augMap->map);
 }
 
+/**
+ * augMapGetMinKey - finds the lowest tribe_id/area_id in election
+ * @param augMap - the augMap from witch we need return the lowest tribe/area_id
+ * @return
+ *      min_id - the lowest id in augMap
+ *      -1 - in case the augMap is empty
+ */
+int augMapGetMinKey(AugMap augMap) {
+    int min_id = -1;
+    int value_int;
+    AugMapResult status;
+    AUG_MAP_FOREACH(tribe_key, augMap) {
+        if (min_id == -1) {
+            status = augMapGetInt(augMap, tribe_key, &min_id);
+            assert(status == AUG_MAP_SUCCESS);
+            continue;
+        }
+        augMapGetInt(augMap, tribe_key, &value_int);
+        if (min_id > value_int) {
+            min_id = value_int;
+        }
+    }
+    return min_id;
+}
