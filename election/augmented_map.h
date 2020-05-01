@@ -167,10 +167,13 @@ Map augMapConvertToMap(AugMap map);
  * @return an int - the size of the AugMap->map.
  */
 int augMapGetSize(AugMap map);
+
 /*!
  * Macros for iterating over the map's values.
  * Declares a new iterator for the loop.
  */
+int augMapGetMinKey(AugMap map);
+
 #define AUG_MAP_FOREACH(iterator, map)                 \
     for (int iterator = augMapGetFirst(map); iterator != -1; \
          iterator = augMapGetNext(map))
