@@ -308,13 +308,13 @@ static inline int max(int first, int second) {
  * @param num_of_votes - can be positive for adding votes or negative votes but cant be zero
  * @return
  *      ELECTION_NULL_ARGUMENT - null argument
- *      ELECTION_INVALID_ID - negetive tribe/area id
+ *      ELECTION_INVALID_ID - negative tribe/area id
  *      ELECTION_TRIBE_NOT_EXIST
  *      ELECTION_AREA_NOT_EXIST
- *      ELECTION_SUCCESS - in case the votes were added or removed seccessfully
+ *      ELECTION_SUCCESS - in case the votes were added or removed successfully
  */
 static ElectionResult electionChangeVotes(Election election, int area_id,
-                                          int tribe_id, int num_of_votes) {
+                                          int tribe_id, int num_of_votes, bool add_votes) {
     //validating arguments
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
@@ -322,20 +322,29 @@ static ElectionResult electionChangeVotes(Election election, int area_id,
     if (area_id < 0 || tribe_id < 0) {
         return ELECTION_INVALID_ID;
     }
+    if (num_of_votes <= 0) {
+        return ELECTION_INVALID_VOTES;
+    }
+    if (!add_votes) {
+        num_of_votes = -num_of_votes;
+    }
+
+    AugMap area_votes;
+    //tries to get the map of the tribes-votes of the specific area
+    AugMapResult status = augMapGetMap(election->votes_by_area, area_id, &area_votes);
+    assert(status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
+    if (status != AUG_MAP_SUCCESS) {
+        return augMapResultToElectionResultArea(status);
+    }
+
     bool res;
     //checks if the tribe already exits in the election
-    AugMapResult status = augMapContains(election->tribes, tribe_id, &res);
+    status = augMapContains(election->tribes, tribe_id, &res);
     assert(status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     if (res == false) {
         return ELECTION_TRIBE_NOT_EXIST;
     }
-    AugMap area_votes;
-    //tries to get the map of the tribes-votes of the specific area
-    status = augMapGetMap(election->votes_by_area, area_id, &area_votes);
-    assert(status != AUG_MAP_OUT_OF_MEMORY);
-    if (status != AUG_MAP_SUCCESS) {
-        return augMapResultToElectionResultArea(status);
-    }
+
     assert(area_votes != NULL);
     int votes = 0;
     //gets the current votes to the tribe in the area
@@ -352,20 +361,14 @@ static ElectionResult electionChangeVotes(Election election, int area_id,
 
 ElectionResult electionAddVote(Election election, int area_id, int tribe_id,
                                int num_of_votes) {
-    if (num_of_votes <= 0) {
-        return ELECTION_INVALID_VOTES;
-    }
     //adding the votes using the electionChangeVotes function
-    return electionChangeVotes(election, area_id, tribe_id, num_of_votes);
+    return electionChangeVotes(election, area_id, tribe_id, num_of_votes, true);
 }
 
 ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
                                   int num_of_votes) {
-    if (num_of_votes <= 0) {
-        return ELECTION_INVALID_VOTES;
-    }
     //removing the votes using the electionChangeVotes function
-    return electionChangeVotes(election, area_id, tribe_id, -num_of_votes);
+    return electionChangeVotes(election, area_id, tribe_id, num_of_votes, false);
 }
 
 Map electionComputeAreasToTribesMapping(Election election) {
