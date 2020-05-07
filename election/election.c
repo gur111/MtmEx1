@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#ifndef NDEBUG
+#ifdef DG_TESTER
 
 #include "../MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
