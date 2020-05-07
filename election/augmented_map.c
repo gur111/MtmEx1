@@ -374,7 +374,7 @@ int augMapGetSize(AugMap augMap) {
 }
 
 /**
- * augMapGetMinKey - finds the lowest tribe_id/area_id in election
+ * augMapGetMinKey - Finds the key with the lowest value (all keys are ints)
  * @param augMap - the augMap from witch we need return the lowest tribe/area_id
  * @return
  *      min_id - the lowest id in augMap
@@ -382,17 +382,13 @@ int augMapGetSize(AugMap augMap) {
  */
 int augMapGetMinKey(AugMap augMap) {
     int min_id = -1;
-    int value_int;
-    AugMapResult status;
-    AUG_MAP_FOREACH(tribe_key, augMap) {
+    AUG_MAP_FOREACH(cur_key, augMap) {
         if (min_id == -1) {
-            status = augMapGetInt(augMap, tribe_key, &min_id);
-            assert(status == AUG_MAP_SUCCESS);
+            min_id = cur_key;
             continue;
         }
-        augMapGetInt(augMap, tribe_key, &value_int);
-        if (min_id > value_int) {
-            min_id = value_int;
+        if (cur_key < min_id) {
+            min_id = cur_key;
         }
     }
     return min_id;
