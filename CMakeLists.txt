@@ -4,7 +4,7 @@ project(VsCodeCMakeTets VERSION 0.1.0 LANGUAGES C)
 include(CTest)
 enable_testing()
 # set(CMAKE_TEST_DEBUG "-std=c99 -pedantic-errors -Wall -Werror")
-set(CMAKE_TEST_DEBUG "-std=c99 -pedantic-errors -Wall -Werror")
+set(CMAKE_TEST_DEBUG "-std=c99 -pedantic-errors -Wall -Werror -DDG_TESTER")
 set(CMAKE_TEST_RELEASE "${CMAKE_TEST_DEBUG} -DNDEBUG")
 
 set(CMAKE_C_FLAGS ${CMAKE_TEST_DEBUG})

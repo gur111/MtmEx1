@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef NDEBUG
+#ifndef DG_TESTER
 
 #include "../MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
