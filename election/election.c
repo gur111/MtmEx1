@@ -23,7 +23,7 @@ Election electionCreate() {
     if (election == NULL) {
         return NULL;
     }
-    //creating sub maps
+    // creating sub maps
     election->votes_by_area = augMapCreate(MAP_TYPE);
     election->areas = augMapCreate(STR_TYPE);
     election->tribes = augMapCreate(STR_TYPE);
@@ -45,7 +45,8 @@ void electionDestroy(Election election) {
 }
 
 /**
- * isLowerCase - checks if the string consist of lower case characters and space key
+ * isLowerCase - checks if the string consist of lower case characters and space
+ * key
  * @param string  - the string that needs to be checked
  * @return
  *      true - in case the string consist of lower case characters and space key
@@ -64,9 +65,10 @@ static bool isLowerCase(const char *string) {
 typedef ElectionResult (*ConvertFunc)(AugMapResult);
 
 /**
- * augMapResultToElectionResultTribe - converts the eNUM from the augmented_map.h to ElectionResult -
- * specific conversion to tribe Enums
- * @param result - a eNum of AugMapResult - only eNums that exists in election.h are valid
+ * augMapResultToElectionResultTribe - converts the eNUM from the
+ * augmented_map.h to ElectionResult - specific conversion to tribe Enums
+ * @param result - a eNum of AugMapResult - only eNums that exists in election.h
+ * are valid
  * @return
  *      eNuns ElectionResult
  */
@@ -86,7 +88,7 @@ static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return ELECTION_TRIBE_NOT_EXIST;
         default:
-            //shouldn`t get to here
+            // shouldn`t get to here
             assert(false);
             return ELECTION_SUCCESS;
     }
@@ -94,8 +96,10 @@ static ElectionResult augMapResultToElectionResultTribe(AugMapResult result) {
 
 /**
  * augMapResultToElectionResultArea - converts the eNUM from the
- *                                  augmented_map.h to ElectionResult - specific conversion to area Enums
- * @param result - a eNum of AugMapResult - only eNums that exists in election.h are valid
+ *                                  augmented_map.h to ElectionResult - specific
+ * conversion to area Enums
+ * @param result - a eNum of AugMapResult - only eNums that exists in election.h
+ * are valid
  * @return
  *      eNuns ElectionResult
  */
@@ -116,30 +120,31 @@ static ElectionResult augMapResultToElectionResultArea(AugMapResult result) {
         case AUG_MAP_ITEM_DOES_NOT_EXIST:
             return ELECTION_AREA_NOT_EXIST;
         default:
-            //shouldn`t get to here
+            // shouldn`t get to here
             assert(false);
             return ELECTION_SUCCESS;
     }
 }
 
 /**
- * electionSetName - inserts or updates the name of tribe or area. validate the inputs of the input.
+ * electionSetName - inserts or updates the name of tribe or area. validate the
+ * inputs of the input.
  * @param aug_map - the tribe or the area map
  * @param element_id - the tribe id or the area id - cant be negative
  * @param name - the new name of the area or tribe
- * @param should_exist - indicates if the user wants to change the name of the tribe or just enter a new tribe to the
- *                      election
+ * @param should_exist - indicates if the user wants to change the name of the
+ * tribe or just enter a new tribe to the election
  * @param augMapResultToElectionResult - the function that converts the eNum
  * @return
  *      ELECTION_NULL_ARGUMENT - in case there`s a null argument
  *      ELECTION_INVALID_ID - if the id negative
- *      ELECTION_TRIBE_DOSE_NOT_EXIST - in case the user wants to update the name of the tribe, but it dosen`t exist
- *      ELECTION_INVALID_NAME - invalid char in the name string
- *      ELECTION_SUCCESS - if the name was successfully inserted
+ *      ELECTION_TRIBE_DOSE_NOT_EXIST - in case the user wants to update the
+ * name of the tribe, but it dosen`t exist ELECTION_INVALID_NAME - invalid char
+ * in the name string ELECTION_SUCCESS - if the name was successfully inserted
  */
 static ElectionResult electionSetName(
-        AugMap aug_map, int element_id, const char *name, bool should_exist,
-        ConvertFunc augMapResultToElectionResult) {
+    AugMap aug_map, int element_id, const char *name, bool should_exist,
+    ConvertFunc augMapResultToElectionResult) {
     // Verify arguments
     assert(aug_map != NULL);
     assert(augMapGetType(aug_map) == STR_TYPE);
@@ -151,22 +156,24 @@ static ElectionResult electionSetName(
     }
 
     bool is_present;
-    //checks if the tribe/area id already exits in election
+    // checks if the tribe/area id already exits in election
     AugMapResult status = augMapContains(aug_map, element_id, &is_present);
     if (status != AUG_MAP_SUCCESS) {
         return augMapResultToElectionResult(status);
     }
-    //checks if the user wants to update the tribe name but the tribe doesnt exists
+    // checks if the user wants to update the tribe name but the tribe doesnt
+    // exists
     if (is_present != should_exist) {
         return should_exist
-               ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
-               : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
+                   ? augMapResultToElectionResult(AUG_MAP_ITEM_DOES_NOT_EXIST)
+                   : augMapResultToElectionResult(AUG_MAP_ITEM_ALREADY_EXISTS);
     }
 
     if (!isLowerCase(name)) {
         return ELECTION_INVALID_NAME;
     }
-    //inserts the new name to and id to election / or just updates the value of the key
+    // inserts the new name to and id to election / or just updates the value of
+    // the key
     AugMapResult res = augMapPutStr(aug_map, element_id, name);
     assert(res != AUG_MAP_INVALID_TYPE);
     return augMapResultToElectionResult(res);
@@ -177,7 +184,8 @@ ElectionResult electionAddTribe(Election election, int tribe_id,
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
-    //inserting the new tribe to election->tribe, using the electionSetName function
+    // inserting the new tribe to election->tribe, using the electionSetName
+    // function
     return electionSetName(election->tribes, tribe_id, tribe_name, false,
                            augMapResultToElectionResultTribe);
 }
@@ -187,23 +195,24 @@ ElectionResult electionAddArea(Election election, int area_id,
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
-    //adding the area_id and its name to election->areas
+    // adding the area_id and its name to election->areas
     ElectionResult result =
-            electionSetName(election->areas, area_id, area_name, false,
-                            augMapResultToElectionResultArea);
+        electionSetName(election->areas, area_id, area_name, false,
+                        augMapResultToElectionResultArea);
     if (result != ELECTION_SUCCESS) {
         return result;
     }
-    //creating the map the that would store the votes to the tribes - in this  area.
+    // creating the map the that would store the votes to the tribes - in this
+    // area.
     AugMap votes_tribe_map = augMapCreate(INT_TYPE);
     if (votes_tribe_map == NULL) {
-        //memory problem
+        // memory problem
         AugMapResult res = augMapRemove(election->areas, area_id);
         assert(res == AUG_MAP_SUCCESS);
         return ELECTION_OUT_OF_MEMORY;
     }
     AugMapResult status =
-            augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
+        augMapPutMap(election->votes_by_area, area_id, votes_tribe_map);
     assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS);
 
     if (status == AUG_MAP_OUT_OF_MEMORY) {
@@ -220,12 +229,14 @@ char *electionGetTribeName(Election election, int tribe_id) {
         return NULL;
     }
     char *result;
-    //getting the value of the tribe id from election->tribes
+    // getting the value of the tribe id from election->tribes
     AugMapResult status = augMapGetStr(election->tribes, tribe_id, &result);
-    assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
+    assert(status == AUG_MAP_OUT_OF_MEMORY || status == AUG_MAP_SUCCESS ||
+           status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     assert(status != AUG_MAP_NULL_ARGUMENT && status != AUG_MAP_INVALID_KEY);
     if (status != AUG_MAP_SUCCESS) {
-        //if there were any problems in the input or in the function need to return null
+        // if there were any problems in the input or in the function need to
+        // return null
         return NULL;
     }
     return result;
@@ -242,7 +253,7 @@ ElectionResult electionSetTribeName(Election election, int tribe_id,
 }
 
 ElectionResult electionRemoveTribe(Election election, int tribe_id) {
-    //validating the arguments
+    // validating the arguments
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
@@ -255,15 +266,18 @@ ElectionResult electionRemoveTribe(Election election, int tribe_id) {
         return augMapResultToElectionResultTribe(status);
     }
     AUG_MAP_FOREACH(area_key, election->votes_by_area) {
-        //going through the areas in the election and checking if there's votes to the removed tribe
+        // going through the areas in the election and checking if there's votes
+        // to the removed tribe
         AugMap area_votes;
         status = augMapGetMap(election->votes_by_area, area_key, &area_votes);
-        //AUG_MAP_ITEM_DOES_NOT_EXIST also isn`t a possibility because  AUG_MAP_FOREACH gives us the key form areas
+        // AUG_MAP_ITEM_DOES_NOT_EXIST also isn`t a possibility because
+        // AUG_MAP_FOREACH gives us the key form areas
         assert(status == AUG_MAP_SUCCESS);
         status = augMapRemove(area_votes, tribe_id);
         assert(status != AUG_MAP_NULL_ARGUMENT);
-        // dont need to check if augMapRemove returned AUG_MAP_ITEM_DOES_NOT_EXIST, because the area_key
-        // was given by AUG_MAP_FOREACH.
+        // dont need to check if augMapRemove returned
+        // AUG_MAP_ITEM_DOES_NOT_EXIST, because the area_key was given by
+        // AUG_MAP_FOREACH.
     }
     return ELECTION_SUCCESS;
 }
@@ -276,7 +290,7 @@ ElectionResult electionRemoveAreas(Election election,
 
     for (bool was_deleted = true; was_deleted;) {
         was_deleted = false;
-        //iterating until there`s no more items to delete
+        // iterating until there`s no more items to delete
         AUG_MAP_FOREACH(key, election->areas) {
             if (should_delete_area(key)) {
                 AugMapResult status = augMapRemove(election->areas, key);
@@ -305,7 +319,8 @@ static inline int max(int first, int second) {
  * @param election - the election system
  * @param area_id
  * @param tribe_id
- * @param num_of_votes - can be positive for adding votes or negative votes but cant be zero
+ * @param num_of_votes - can be positive for adding votes or negative votes but
+ * cant be zero
  * @return
  *      ELECTION_NULL_ARGUMENT - null argument
  *      ELECTION_INVALID_ID - negative tribe/area id
@@ -314,8 +329,9 @@ static inline int max(int first, int second) {
  *      ELECTION_SUCCESS - in case the votes were added or removed successfully
  */
 static ElectionResult electionChangeVotes(Election election, int area_id,
-                                          int tribe_id, int num_of_votes, bool add_votes) {
-    //validating arguments
+                                          int tribe_id, int num_of_votes,
+                                          bool add_votes) {
+    // validating arguments
     if (election == NULL) {
         return ELECTION_NULL_ARGUMENT;
     }
@@ -330,15 +346,16 @@ static ElectionResult electionChangeVotes(Election election, int area_id,
     }
 
     AugMap area_votes;
-    //tries to get the map of the tribes-votes of the specific area
-    AugMapResult status = augMapGetMap(election->votes_by_area, area_id, &area_votes);
+    // tries to get the map of the tribes-votes of the specific area
+    AugMapResult status =
+        augMapGetMap(election->votes_by_area, area_id, &area_votes);
     assert(status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     if (status != AUG_MAP_SUCCESS) {
         return augMapResultToElectionResultArea(status);
     }
 
     bool res;
-    //checks if the tribe already exits in the election
+    // checks if the tribe already exits in the election
     status = augMapContains(election->tribes, tribe_id, &res);
     assert(status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     if (res == false) {
@@ -347,81 +364,91 @@ static ElectionResult electionChangeVotes(Election election, int area_id,
 
     assert(area_votes != NULL);
     int votes = 0;
-    //gets the current votes to the tribe in the area
+    // gets the current votes to the tribe in the area
     status = augMapGetInt(area_votes, tribe_id, &votes);
     assert(status == AUG_MAP_SUCCESS || status == AUG_MAP_ITEM_DOES_NOT_EXIST);
     if (status == AUG_MAP_ITEM_DOES_NOT_EXIST) {
         votes = 0;
     }
     votes = votes + num_of_votes;
-    //inserts the new votes to the map of tribe-votes
+    // inserts the new votes to the map of tribe-votes
     status = augMapPutInt(area_votes, tribe_id, max(0, votes));
     return augMapResultToElectionResultTribe(status);
 }
 
 ElectionResult electionAddVote(Election election, int area_id, int tribe_id,
                                int num_of_votes) {
-    //adding the votes using the electionChangeVotes function
+    // adding the votes using the electionChangeVotes function
     return electionChangeVotes(election, area_id, tribe_id, num_of_votes, true);
 }
 
 ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
                                   int num_of_votes) {
-    //removing the votes using the electionChangeVotes function
-    return electionChangeVotes(election, area_id, tribe_id, num_of_votes, false);
+    // removing the votes using the electionChangeVotes function
+    return electionChangeVotes(election, area_id, tribe_id, num_of_votes,
+                               false);
 }
 
 Map electionComputeAreasToTribesMapping(Election election) {
-    AugMap results = augMapCreate(INT_TYPE);
-    if (results == NULL || election == NULL) {
+    if (election == NULL) {
         return NULL;
     }
-    AUG_MAP_FOREACH(area, election->votes_by_area) {
-        //going through the areas in election
-        bool is_map_empty = true;
-        int max_votes = 0;
-        int wining_tribe_id = 0;
-        AugMap tribe_votes_map;
-        //getting the map of the tribe-votes in the area
+
+    AugMap results = augMapCreate(INT_TYPE);
+    if (results == NULL) {
+        return NULL;
+    }
+
+    // Getting the min tribe id, if there`s no tribes in the system returns an
+    // empty map
+    int min_tribe_id = augMapGetMinKey(election->tribes);
+    if (min_tribe_id == -1) {
+        return augMapConvertToMap(results);
+    }
+
+    AUG_MAP_FOREACH(area_key, election->votes_by_area) {
+        // going through the areas in election
+        bool is_first_iteration = true;
+        int winning_tribe_votes = 0;
+        int winning_tribe_id;
+        AugMap cur_area_votes;
+        // getting the map of the tribe-votes in the area
         AugMapResult status =
-                augMapGetMap(election->votes_by_area, area, &tribe_votes_map);
+            augMapGetMap(election->votes_by_area, area_key, &cur_area_votes);
         if (status != AUG_MAP_SUCCESS) {
+            augMapDestroy(results);
             return NULL;
         }
-        //getting the min tribe id, if there`s no tribes in the system returns a null map
-        int min_tribe_id = augMapGetMinKey(election->tribes);
-        if (min_tribe_id == -1) {
-            return augMapConvertToMap(results);
-        }
 
-        AUG_MAP_FOREACH(area_key, tribe_votes_map) {
-            //going through the tribes in the area with votes
+        AUG_MAP_FOREACH(tribe_key, cur_area_votes) {
+            // going through the tribes in the area with votes
             int current_tribe_vote;
-            status = augMapGetInt(tribe_votes_map, area, &current_tribe_vote);
+            status =
+                augMapGetInt(cur_area_votes, tribe_key, &current_tribe_vote);
             if (status != AUG_MAP_SUCCESS) {
+                augMapDestroy(results);
                 return NULL;
             }
-            if (is_map_empty) {
-                //setting for the first time
-                is_map_empty = false;
-                max_votes = current_tribe_vote;
-                wining_tribe_id = current_tribe_vote;
-            }
-            if (wining_tribe_id > current_tribe_vote && max_votes == current_tribe_vote) {
-                wining_tribe_id = current_tribe_vote;
-            }
-            if (current_tribe_vote > wining_tribe_id) {
-                wining_tribe_id = current_tribe_vote;
-                max_votes = current_tribe_vote;
+            if (is_first_iteration) {
+                // Setting for the first time
+                is_first_iteration = false;
+                winning_tribe_votes = current_tribe_vote;
+                winning_tribe_id = tribe_key;
+            } else if (current_tribe_vote > winning_tribe_votes) {
+                winning_tribe_id = tribe_key;
+                winning_tribe_votes = current_tribe_vote;
+            } else if (current_tribe_vote == winning_tribe_votes && tribe_key < winning_tribe_id) {
+                winning_tribe_id = tribe_key;
             }
         }
-        //if no vote was added in the area
-        if (max_votes == 0) {
-            wining_tribe_id = min_tribe_id;
+        // if no vote was added in the area
+        if (winning_tribe_votes == 0) {
+            winning_tribe_id = min_tribe_id;
         }
-        //inserting the most votes
-        status = augMapPutInt(results, area, wining_tribe_id);
+        // inserting the most votes
+        status = augMapPutInt(results, area_key, winning_tribe_id);
         if (status != AUG_MAP_SUCCESS) {
+            augMapDestroy(results);
             return NULL;
         }
     }
