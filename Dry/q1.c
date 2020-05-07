@@ -61,7 +61,6 @@ ErrorCode mergeSortedLists(Node list1, Node list2, Node *merged_out) {
         curr->next = malloc(sizeof(*curr));
         curr = curr->next;
         if (curr == NULL) {
-            // TODO: Free from had
             freeList(head);
             return MEMORY_ERROR;
         }
