@@ -5,7 +5,7 @@
 
 #ifdef DG_TESTER
 
-#include "../MtmEx1Tester/utils.h"
+#include "MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
 #define malloc xmalloc
 #endif

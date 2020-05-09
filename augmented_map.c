@@ -6,12 +6,12 @@
 
 #ifndef DG_TESTER
 
-#include "../MtmEx1Tester/utils.h"
+#include "MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
 #define malloc xmalloc
 #endif
 
-#include "../mtm_map/map.h"
+#include "mtm_map/map.h"
 
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
 #define MAX_PTR_AS_STR_SIZE 20

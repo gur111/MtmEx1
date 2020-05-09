@@ -14,11 +14,11 @@ add_executable(MapTester MtmEx1Tester/map_tests.c mtm_map/map.c MtmEx1Tester/uti
 
 #link_directories(.)
 add_executable(ElectionTester
-               MtmEx1Tester/election_tests.c
-               election/election.c
-               mtm_map/map.c
-               election/augmented_map.c
-               MtmEx1Tester/utils.c)
+                MtmEx1Tester/election_tests.c
+                MtmEx1Tester/utils.c
+                election.c
+                augmented_map.c
+                mtm_map/map.c)
 # target_link_libraries(ElectionTester libmap.a)
 
 add_executable(Q2Tester Dry/q2.c)
