@@ -206,9 +206,14 @@ ElectionResult electionAddArea(Election election, int area_id,
     // area.
     AugMap votes_tribe_map = augMapCreate(INT_TYPE);
     if (votes_tribe_map == NULL) {
-        // memory problem
+// memory problem
+#ifndef NDEBUG
         AugMapResult res = augMapRemove(election->areas, area_id);
         assert(res == AUG_MAP_SUCCESS);
+#else
+        augMapRemove(election->areas, area_id);
+#endif
+
         return ELECTION_OUT_OF_MEMORY;
     }
     AugMapResult status =
@@ -217,8 +222,13 @@ ElectionResult electionAddArea(Election election, int area_id,
 
     if (status == AUG_MAP_OUT_OF_MEMORY) {
         augMapDestroy(votes_tribe_map);
+#ifndef NDEBUG
         AugMapResult res = augMapRemove(election->areas, area_id);
         assert(res == AUG_MAP_SUCCESS);
+#else
+        augMapRemove(election->areas, area_id);
+#endif
+
         return ELECTION_OUT_OF_MEMORY;
     }
     return augMapResultToElectionResultArea(status);
@@ -293,10 +303,14 @@ ElectionResult electionRemoveAreas(Election election,
         // iterating until there`s no more items to delete
         AUG_MAP_FOREACH(key, election->areas) {
             if (should_delete_area(key)) {
-                AugMapResult status = augMapRemove(election->areas, key);
-                assert(status == AUG_MAP_SUCCESS);
-                status = augMapRemove(election->votes_by_area, key);
-                assert(status == AUG_MAP_SUCCESS);
+#ifndef NDEBUG
+                assert(augMapRemove(election->areas, key) == AUG_MAP_SUCCESS);
+                assert(augMapRemove(election->votes_by_area, key) ==
+                       AUG_MAP_SUCCESS);
+#else
+                augMapRemove(election->areas, key);
+                augMapRemove(election->votes_by_area, key);
+#endif
                 was_deleted = true;
                 break;  // To break the foreach loop
             }
@@ -437,7 +451,8 @@ Map electionComputeAreasToTribesMapping(Election election) {
             } else if (current_tribe_vote > winning_tribe_votes) {
                 winning_tribe_id = tribe_key;
                 winning_tribe_votes = current_tribe_vote;
-            } else if (current_tribe_vote == winning_tribe_votes && tribe_key < winning_tribe_id) {
+            } else if (current_tribe_vote == winning_tribe_votes &&
+                       tribe_key < winning_tribe_id) {
                 winning_tribe_id = tribe_key;
             }
         }
