@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "election/election.h"
-#include "test_utilities.h"
+#include "../election.h"
+#include "../test_utilities.h"
 
 /*The number of tests*/
 #define NUMBER_TESTS 1
