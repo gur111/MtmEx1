@@ -4,14 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef DG_TESTER
+#ifdef DG_TESTER
 
-#include "../MtmEx1Tester/utils.h"
+#include "MtmEx1Tester/utils.h"
 // Allow malloc to be unstable
 #define malloc xmalloc
 #endif
 
-#include "../mtm_map/map.h"
+#include "mtm_map/map.h"
 
 // Supports upto 64 bit. On 99% of systems it will be 11 inc \0
 #define MAX_PTR_AS_STR_SIZE 20
@@ -139,7 +139,7 @@ AugMapResult augMapGetMap(AugMap map, int key, AugMap *result) {
 
     assert(str_value != NULL);
 
-    *result = (AugMap) strToPtr(str_value);
+    *result = (AugMap)strToPtr(str_value);
     return AUG_MAP_SUCCESS;
 }
 
@@ -232,7 +232,7 @@ static AugMapResult augMapPut(AugMap map, AugMapType type, int key,
     intToStr(key, str_key);
 
     AugMapResult status =
-            mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
+        mapResultToAugMapResult(mapPut(map->map, str_key, str_value));
 
     return status;
 }
@@ -343,14 +343,17 @@ void augMapDestroy(AugMap map) {
 
     if (map->type == MAP_TYPE) {
         AugMap sub_map;
-        AugMapResult status;
         // It may seem recursive, it may smell recursive, it may sound, it may
         // even taste recursive It isn't really, sub maps will never be map of
         // maps. See `augMapPutMap`
         AUG_MAP_FOREACH(key, map) {
-            status = augMapGetMap(map, key, &sub_map);
-            assert(status == AUG_MAP_SUCCESS);
+#ifndef NDEBUG
+            assert(augMapGetMap(map, key, &sub_map) == AUG_MAP_SUCCESS);
             assert(sub_map->type != MAP_TYPE);
+#else
+            augMapGetMap(map, key, &sub_map);
+#endif
+
             augMapDestroy(sub_map);
         }
     }
@@ -369,9 +372,7 @@ Map augMapConvertToMap(AugMap augMap) {
     return map;
 }
 
-int augMapGetSize(AugMap augMap) {
-    return mapGetSize(augMap->map);
-}
+int augMapGetSize(AugMap augMap) { return mapGetSize(augMap->map); }
 
 /**
  * augMapGetMinKey - Finds the key with the lowest value (all keys are ints)

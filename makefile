@@ -2,7 +2,7 @@ CC = gcc
 COMP_FLAGS = -std=c99 -pedantic-errors -Wall -Werror
 DEBUG_FLAGS = -g -DDG_TESTER
 PRODUCTION_FLAGS = -DNDEBUG
-RELEASE_TYPE_FLAGS = $(DBEUG_FLAGS) 
+RELEASE_TYPE_FLAGS = $(PRODUCTION_FLAGS) 
 MAP = map.o
 MAP_DIR = mtm_map
 ELECTION = election.o

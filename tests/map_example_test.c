@@ -3,7 +3,7 @@
 //
 
 #include "../test_utilities.h"
-#include "/mtm_map/map.h"
+#include "../mtm_map/map.h"
 #include <stdlib.h>
 
 #define NUMBER_TESTS 4

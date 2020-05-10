@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#include "../mtm_map/map.h"
+#include "mtm_map/map.h"
 
 typedef enum {
     INT_TYPE, STR_TYPE, MAP_TYPE, UNKNOWN
