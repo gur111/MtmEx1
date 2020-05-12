@@ -12,10 +12,10 @@ OBJS = $(MAP) $(ELECTION) $(AUG_MAP)
 PROG = election
 
 
-$(PROG): $(ELECTION_TESTER)
+$(PROG): $(ELECTION_TESTER) $(OBJS)
 	$(CC) $(RELEASE_TYPE_FLAGS) $(ELECTION_TESTER) $(OBJS) -o $@
 
-$(ELECTION_TESTER): tests/electionTestsExample.c test_utilities.h election.h $(OBJS)
+$(ELECTION_TESTER): tests/electionTestsExample.c test_utilities.h election.h
 	$(CC) -c $(RELEASE_TYPE_FLAGS) $(COMP_FLAGS) tests/$*.c
 
 $(ELECTION): election.c election.h mtm_map/map.h
