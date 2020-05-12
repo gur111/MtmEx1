@@ -403,6 +403,46 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
                                false);
 }
 
+// Get the winning tribe for the current area
+static int computeWinningTribe(AugMap area_votes) {
+    assert(area_votes);
+    assert(augMapGetType(area_votes) == INT_TYPE);
+    AugMapResult status;
+
+    bool is_first_iteration = true;
+    int winning_tribe_votes = 0;
+    int winning_tribe_id;
+
+    AUG_MAP_FOREACH(tribe_key, area_votes) {
+        // going through the tribes in the area with votes
+        int current_tribe_vote;
+        status = augMapGetInt(area_votes, tribe_key, &current_tribe_vote);
+        // There are no possible errors in this special (when iterating and
+        // getting the int value)
+        assert(status == AUG_MAP_SUCCESS);
+
+        if (is_first_iteration) {
+            // Setting for the first time
+            is_first_iteration = false;
+            winning_tribe_votes = current_tribe_vote;
+            winning_tribe_id = tribe_key;
+        } else if (current_tribe_vote > winning_tribe_votes) {
+            winning_tribe_id = tribe_key;
+            winning_tribe_votes = current_tribe_vote;
+        } else if (current_tribe_vote == winning_tribe_votes &&
+                   tribe_key < winning_tribe_id) {
+            winning_tribe_id = tribe_key;
+        }
+    }
+
+    // if no vote was added in the area
+    if (winning_tribe_votes == 0) {
+        return -1;
+    }
+
+    return winning_tribe_id;
+}
+
 Map electionComputeAreasToTribesMapping(Election election) {
     if (election == NULL) {
         return NULL;
@@ -420,11 +460,8 @@ Map electionComputeAreasToTribesMapping(Election election) {
         return augMapConvertToMap(results);
     }
 
+    // going through the areas in election
     AUG_MAP_FOREACH(area_key, election->votes_by_area) {
-        // going through the areas in election
-        bool is_first_iteration = true;
-        int winning_tribe_votes = 0;
-        int winning_tribe_id;
         AugMap cur_area_votes;
         // getting the map of the tribe-votes in the area
         AugMapResult status =
@@ -433,33 +470,13 @@ Map electionComputeAreasToTribesMapping(Election election) {
             augMapDestroy(results);
             return NULL;
         }
+        int winning_tribe_id = computeWinningTribe(cur_area_votes);
 
-        AUG_MAP_FOREACH(tribe_key, cur_area_votes) {
-            // going through the tribes in the area with votes
-            int current_tribe_vote;
-            status =
-                augMapGetInt(cur_area_votes, tribe_key, &current_tribe_vote);
-            if (status != AUG_MAP_SUCCESS) {
-                augMapDestroy(results);
-                return NULL;
-            }
-            if (is_first_iteration) {
-                // Setting for the first time
-                is_first_iteration = false;
-                winning_tribe_votes = current_tribe_vote;
-                winning_tribe_id = tribe_key;
-            } else if (current_tribe_vote > winning_tribe_votes) {
-                winning_tribe_id = tribe_key;
-                winning_tribe_votes = current_tribe_vote;
-            } else if (current_tribe_vote == winning_tribe_votes &&
-                       tribe_key < winning_tribe_id) {
-                winning_tribe_id = tribe_key;
-            }
-        }
         // if no vote was added in the area
-        if (winning_tribe_votes == 0) {
+        if (winning_tribe_id == -1) {
             winning_tribe_id = min_tribe_id;
         }
+
         // inserting the most votes
         status = augMapPutInt(results, area_key, winning_tribe_id);
         if (status != AUG_MAP_SUCCESS) {

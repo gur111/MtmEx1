@@ -372,7 +372,10 @@ Map augMapConvertToMap(AugMap augMap) {
     return map;
 }
 
-int augMapGetSize(AugMap augMap) { return mapGetSize(augMap->map); }
+int augMapGetSize(AugMap augMap) {
+    // Get map size
+    return mapGetSize(augMap->map);
+}
 
 /**
  * augMapGetMinKey - Finds the key with the lowest value (all keys are ints)
