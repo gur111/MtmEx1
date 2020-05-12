@@ -407,7 +407,9 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
 static int computeWinningTribe(AugMap area_votes) {
     assert(area_votes);
     assert(augMapGetType(area_votes) == INT_TYPE);
+#ifndef NDBEUG
     AugMapResult status;
+#endif
 
     bool is_first_iteration = true;
     int winning_tribe_votes = 0;
@@ -416,7 +418,11 @@ static int computeWinningTribe(AugMap area_votes) {
     AUG_MAP_FOREACH(tribe_key, area_votes) {
         // going through the tribes in the area with votes
         int current_tribe_vote;
+#ifndef NDBEUG
         status = augMapGetInt(area_votes, tribe_key, &current_tribe_vote);
+#else
+        augMapGetInt(area_votes, tribe_key, &current_tribe_vote);
+#endif
         // There are no possible errors in this special (when iterating and
         // getting the int value)
         assert(status == AUG_MAP_SUCCESS);
