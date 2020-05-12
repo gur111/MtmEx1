@@ -407,7 +407,7 @@ ElectionResult electionRemoveVote(Election election, int area_id, int tribe_id,
 static int computeWinningTribe(AugMap area_votes) {
     assert(area_votes);
     assert(augMapGetType(area_votes) == INT_TYPE);
-#ifndef NDBEUG
+#ifndef NDEBUG
     AugMapResult status;
 #endif
 
@@ -418,7 +418,7 @@ static int computeWinningTribe(AugMap area_votes) {
     AUG_MAP_FOREACH(tribe_key, area_votes) {
         // going through the tribes in the area with votes
         int current_tribe_vote;
-#ifndef NDBEUG
+#ifndef NDEBUG
         status = augMapGetInt(area_votes, tribe_key, &current_tribe_vote);
 #else
         augMapGetInt(area_votes, tribe_key, &current_tribe_vote);
